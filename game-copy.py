@@ -537,7 +537,7 @@ replay_button = Button(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 100, replay_
 resume_button = Button(304, 125, resume_img, 0.5)
 options_button = Button(304, 250, options_img, 0.5)
 exit_button2 = Button(304, 375, exit_img, 0.5)
-keys_button = Button(304, 200, keys_img, 0.5)
+keys_button = Button(304, 220, keys_img, 0.5)
 
 
 
@@ -647,40 +647,49 @@ while run:
         
         #update the player actions
         if player.alive:
-            #shoot bullets
-            if shoot:
-                player.shoot()
-            if player.in_air:
-                player.update_action(2) # 2 means jump
-            elif moving_left or moving_right:
-                player.update_action(1) # 1 means run
-            else:
-                player.update_action(0) # 0 means idle
-            screen_scroll, level_complete = player.move(moving_left, moving_right)
-            bg_scroll -= screen_scroll
-            #check if the player has completed the level
-            if level_complete:
-                level += 1
-                bg_scroll = 0
-                world_data = reset_level()
-                if level <= MAX_LEVELS:
-                    #load in level data and create world
-                    with open(f'level{level}_data.csv', newline='') as csvfile:
-                        reader = csv.reader(csvfile, delimiter=',')
-                        for x, row in enumerate(reader):
-                            for y, tile in enumerate(row):
-                                world_data[x][y] = int(tile)
-                    world = World()
-                    player, health_bar, bullet_bar = world.process_data(world_data)
             if game_paused == True:
                 if menu_state == "main":
                     #draw pause screen buttons
                     screen.fill(BG2)
                     if resume_button.draw(screen):
                         game_paused = False
+                    if options_button.draw(screen):
+                        menu_state = "options"
                     if exit_button2.draw(screen):
                         run = False
+                if menu_state == "options":
+                    screen.fill(BG2)
+                    if keys_button.draw(screen):
+                        menu_state = "keys"
                     #check if the options menu is open
+                if menu_state == "keys":
+                    screen.fill(BG2)
+            else:
+            #shoot bullets
+                if shoot:
+                    player.shoot()
+                if player.in_air:
+                    player.update_action(2) # 2 means jump
+                elif moving_left or moving_right:
+                    player.update_action(1) # 1 means run
+                else:
+                    player.update_action(0) # 0 means idle
+                screen_scroll, level_complete = player.move(moving_left, moving_right)
+                bg_scroll -= screen_scroll
+                #check if the player has completed the level
+                if level_complete:
+                    level += 1
+                    bg_scroll = 0
+                    world_data = reset_level()
+                    if level <= MAX_LEVELS:
+                        #load in level data and create world
+                        with open(f'level{level}_data.csv', newline='') as csvfile:
+                            reader = csv.reader(csvfile, delimiter=',')
+                            for x, row in enumerate(reader):
+                                for y, tile in enumerate(row):
+                                    world_data[x][y] = int(tile)
+                        world = World()
+                        player, health_bar, bullet_bar = world.process_data(world_data)
                             
         else:
             screen_scroll = 0
