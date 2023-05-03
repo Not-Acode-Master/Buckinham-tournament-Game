@@ -31,6 +31,7 @@ level = 1
 start_game = False
 game_paused = False
 menu_state = "main"
+clicked = False
 
 # define player action variables
 moving_left = False
@@ -593,6 +594,8 @@ while run:
                 moving_right = False
             if event.key == pygame.K_SPACE:
                 shoot = False
+        if event.type == pygame.MOUSEBUTTONUP:
+            clicked = False
 
     #check if game paused
     
@@ -653,17 +656,20 @@ while run:
                     screen.fill(BG2)
                     if resume_button.draw(screen):
                         game_paused = False
-                    if options_button.draw(screen):
+                    if options_button.draw(screen) and clicked == False:
                         menu_state = "options"
+                        clicked = True
                     if exit_button2.draw(screen):
                         run = False
                 if menu_state == "options":
                     screen.fill(BG2)
-                    if keys_button.draw(screen):
+                    if keys_button.draw(screen) and clicked == False:
                         menu_state = "keys"
+                        clicked = True
                     #check if the options menu is open
                 if menu_state == "keys":
                     screen.fill(BG2)
+                    draw_text('Keys', font, WHITE, 200, 200)
             else:
             #shoot bullets
                 if shoot:
