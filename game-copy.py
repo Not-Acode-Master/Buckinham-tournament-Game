@@ -60,6 +60,8 @@ resume_img = pygame.image.load('img//Buttons/resume_button.png').convert_alpha()
 options_img = pygame.image.load('img//Buttons/options_button.png').convert_alpha()
 menu_img = pygame.image.load('img//Buttons/menu_button.png').convert_alpha()
 keys_img = pygame.image.load('img//Buttons/keys_button.png').convert_alpha()
+video_img = pygame.image.load('img//Buttons/video_button.png').convert_alpha()
+audio_img = pygame.image.load('img//Buttons/audio_button.png').convert_alpha()
 
 #backround
 bcimg = pygame.image.load('img/Backround/backgrounds/backround.png').convert_alpha()
@@ -539,6 +541,8 @@ resume_button = Button(304, 125, resume_img, 0.5)
 options_button = Button(304, 250, options_img, 0.5)
 exit_button2 = Button(304, 375, exit_img, 0.5)
 keys_button = Button(304, 220, keys_img, 0.5)
+audio_button = Button(304, 310, audio_img, 0.5)
+video_button = Button(304, 400, video_img, 0.5)
 
 
 
@@ -654,22 +658,35 @@ while run:
                 if menu_state == "main":
                     #draw pause screen buttons
                     screen.fill(BG2)
-                    if resume_button.draw(screen):
+                    if resume_button.draw(screen) and clicked == False:
                         game_paused = False
+                        clicked = True
                     if options_button.draw(screen) and clicked == False:
                         menu_state = "options"
                         clicked = True
-                    if exit_button2.draw(screen):
+                    if exit_button2.draw(screen) and clicked == False:
                         run = False
+                        clicked = True
                 if menu_state == "options":
                     screen.fill(BG2)
                     if keys_button.draw(screen) and clicked == False:
                         menu_state = "keys"
                         clicked = True
+                    if audio_button.draw(screen) and clicked == False:
+                        menu_state = "audio"
+                        clicked = True
+                    if video_button.draw(screen) and clicked == False:
+                        menu_state = "video"
                     #check if the options menu is open
                 if menu_state == "keys":
                     screen.fill(BG2)
                     draw_text('Keys', font, WHITE, 200, 200)
+                if menu_state == "audio":
+                    screen.fill(BG2)
+                    draw_text('Audio', font, WHITE, 200, 200)
+                if menu_state == "video":
+                    screen.fill(BG2)
+                    draw_text('Video', font, WHITE, 200, 200)
             else:
             #shoot bullets
                 if shoot:
