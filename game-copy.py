@@ -62,6 +62,7 @@ menu_img = pygame.image.load('img//Buttons/menu_button.png').convert_alpha()
 keys_img = pygame.image.load('img//Buttons/keys_button.png').convert_alpha()
 video_img = pygame.image.load('img//Buttons/video_button.png').convert_alpha()
 audio_img = pygame.image.load('img//Buttons/audio_button.png').convert_alpha()
+back_img = pygame.image.load('img//Buttons/back_button.png').convert_alpha()
 
 #backround
 bcimg = pygame.image.load('img/Backround/backgrounds/backround.png').convert_alpha()
@@ -543,6 +544,7 @@ exit_button2 = Button(304, 375, exit_img, 0.5)
 keys_button = Button(304, 220, keys_img, 0.5)
 audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
+back_button = Button(20, 530, back_img, 0.5)
 
 
 
@@ -677,16 +679,29 @@ while run:
                         clicked = True
                     if video_button.draw(screen) and clicked == False:
                         menu_state = "video"
+                        clicked = True
+                    if back_button.draw(screen) and clicked == False:
+                        menu_state = "main"
+                        clicked = True
                     #check if the options menu is open
                 if menu_state == "keys":
                     screen.fill(BG2)
                     draw_text('Keys', font, WHITE, 200, 200)
+                    if back_button.draw(screen) and clicked == False:
+                        menu_state = "options"
+                        clicked = True
                 if menu_state == "audio":
                     screen.fill(BG2)
                     draw_text('Audio', font, WHITE, 200, 200)
+                    if back_button.draw(screen) and clicked == False:
+                        menu_state = "options"
+                        clicked = True
                 if menu_state == "video":
                     screen.fill(BG2)
                     draw_text('Video', font, WHITE, 200, 200)
+                    if back_button.draw(screen) and clicked == False:
+                        menu_state = "options"
+                        clicked = True
             else:
             #shoot bullets
                 if shoot:
