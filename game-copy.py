@@ -31,6 +31,7 @@ level = 1
 start_game = False
 game_paused = False
 menu_state = "main"
+main_m_state = "principal"
 clicked = False
 
 # define player action variables
@@ -64,6 +65,8 @@ video_img = pygame.image.load('img//Buttons/video_button.png').convert_alpha()
 audio_img = pygame.image.load('img//Buttons/audio_button.png').convert_alpha()
 back_img = pygame.image.load('img//Buttons/back_button.png').convert_alpha()
 mainmenu_img = pygame.image.load('img//Buttons/mainmenu_button.png').convert_alpha()
+instructions_img = pygame.image.load('img//Buttons/instructions_button.png').convert_alpha()
+history_img = pygame.image.load('img//Buttons/history_button.png').convert_alpha()
 
 #backround
 bcimg = pygame.image.load('img/Backround/backgrounds/backround.png').convert_alpha()
@@ -547,6 +550,8 @@ audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
 back_button = Button(20, 530, back_img, 0.5)
 mainmenu_button = Button(304, 500, mainmenu_img, 0.5)
+instructions_button = Button(310, 400, instructions_img, 0.5)
+history_button = Button(304, 320 ,history_img, 0.5)
 
 
 
@@ -613,10 +618,32 @@ while run:
         #draw menu
         screen.fill(BG2)
         #add buttons
-        if start_button.draw(screen):
-            start_game = True
-        if exit_button.draw(screen):
-            run = False
+        if main_m_state == "principal":
+            if start_button.draw(screen) and clicked == False:
+                start_game = True
+                clicked = True
+            if exit_button.draw(screen) and clicked == False:
+                run = False
+                clicked = True
+            if instructions_button.draw(screen) and clicked == False:
+                main_m_state = "instructions"
+                clicked = True
+        if main_m_state == "instructions":
+            if back_button.draw(screen) and clicked == False:
+                main_m_state = "principal"
+            if keys_button.draw(screen) and clicked == False:
+                main_m_state = "controls"
+                clicked = True
+            if history_button.draw(screen) and clicked == False:
+                main_m_state = "history"
+                clicked = True
+        if main_m_state == "controls":
+            if back_button.draw(screen) and clicked == False:
+                main_m_state = "instructions"
+        if main_m_state == "history":
+            if back_button.draw(screen) and clicked == False:
+                main_m_state = "instructions"
+            
     else:
     #update backround
         draw_bg()
