@@ -546,7 +546,7 @@ keys_button = Button(304, 220, keys_img, 0.5)
 audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
 back_button = Button(20, 530, back_img, 0.5)
-mainmenu_button = Button(500, 400, mainmenu_img, 0.5)
+mainmenu_button = Button(304, 500, mainmenu_img, 0.5)
 
 
 
