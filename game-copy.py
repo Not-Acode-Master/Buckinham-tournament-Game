@@ -638,9 +638,11 @@ while run:
                 main_m_state = "history"
                 clicked = True
         if main_m_state == "controls":
+            draw_text('Controls', font, WHITE, 200, 200)
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
         if main_m_state == "history":
+            draw_text('History', font, WHITE, 200, 200)
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
             
