@@ -53,6 +53,17 @@ heart_img = pygame.image.load('img/icons/0.png').convert_alpha()
 bullet_img = pygame.image.load('img/icons/bullett.png').convert_alpha()
 bullet_imgg = pygame.image.load('img/icons/bullett.png').convert_alpha()
 
+#Keybinding images
+W_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/W.png').convert_alpha(), (75,75))
+A_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/A.png').convert_alpha(), (75,75))
+S_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/S.png').convert_alpha(), (75,75))
+D_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/D.png').convert_alpha(), (75,75))
+P_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/P.png').convert_alpha(), (75,75))
+SPACE_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/SPACE.png').convert_alpha(), (118,75))
+ESC_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/ESC.png').convert_alpha(), (75,75))
+
+
+
 #Button Images
 play_img = pygame.image.load('img//Buttons/play_button.png').convert_alpha()
 exit_img = pygame.image.load('img//Buttons/exit_button.png').convert_alpha()
@@ -91,11 +102,35 @@ BG2 = (125,38,205)
 #define font
 
 font = pygame.font.SysFont('Futura', 30) #Cambiar después la fuente
+font2 = pygame.font.SysFont('Grand 9k Pixel Regular', 20) #Cambiar después la fuente
+
+##Define History
+history = '''The world as we know it has become unstable. The laws of physics have 
+been distorted and strange anomalies are appearing everywhere. It is discovered that a man named Dr. Marcus,a brilliant but reclusive 
+scientist,he has been conducting experiments that have caused this disruption.\n \nYou are an special agent
+ with the purpose of infiltrating in Dr.Marcus's Lab to figure out what is he planning and end his misterious experiments'''
+history_imglab =  pygame.transform.scale(pygame.image.load('img/Aditional_imgs/lab.png').convert_alpha(), (350,250))
+##
 
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
     screen.blit(img, (x, y))
-    
+
+def display_history(surface, history, pos, font, color):
+    collection = [word.split(' ')for word in history.splitlines()]
+    space = font2.size(' ')[0]
+    x,y = pos
+    for lines in collection:
+        for words in lines:
+            word_surface = font.render(words, True, color)
+            word_with, word_height = word_surface.get_size()
+            if x + word_with >= 800:
+                x = pos[0]
+                y += word_height
+            surface.blit(word_surface, (x,y))
+            x += word_with + space
+        x = pos[0]
+        y += word_height
 
 def draw_bg():
     screen.fill(BG)
@@ -539,8 +574,8 @@ class Button():
         return action
 
 #create buttons
-start_button = Button(SCREEN_WIDTH // 2 - 90, SCREEN_HEIGHT // 2 - 100, play_img, 0.5)
-exit_button = Button(SCREEN_WIDTH // 2 - 90, SCREEN_HEIGHT // 2, exit_img, 0.5)
+start_button = Button(304, 125, play_img, 0.5)
+exit_button = Button(304, 400, exit_img, 0.5)
 replay_button = Button(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 100, replay_img, 0.5)
 resume_button = Button(304, 125, resume_img, 0.5)
 options_button = Button(304, 250, options_img, 0.5)
@@ -550,7 +585,7 @@ audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
 back_button = Button(20, 530, back_img, 0.5)
 mainmenu_button = Button(304, 500, mainmenu_img, 0.5)
-instructions_button = Button(310, 400, instructions_img, 0.5)
+instructions_button = Button(304, 250, instructions_img, 0.5)
 history_button = Button(304, 320 ,history_img, 0.5)
 
 
@@ -638,11 +673,26 @@ while run:
                 main_m_state = "history"
                 clicked = True
         if main_m_state == "controls":
-            draw_text('Controls', font, WHITE, 200, 200)
+            draw_text('CONTROLS', font2, BG, 320, 20)
+            screen.blit(W_key,(50, 100))
+            draw_text('JUMP', font2, WHITE, 150, 110)
+            screen.blit(A_key,(50, 160))
+            draw_text('MOVE LEFT', font2, WHITE, 150, 170)
+            screen.blit(S_key,(50, 220))
+            draw_text('CROUCH', font2, WHITE, 150, 230)
+            screen.blit(D_key,(50, 280))
+            draw_text('MOVE RIGHT', font2, WHITE, 150, 290)
+            screen.blit(SPACE_key,(30, 380))
+            draw_text('SHOOT', font2, WHITE, 170, 390)
+            screen.blit(ESC_key,(350, 100))
+            draw_text('QUIT GAME', font2, WHITE, 450, 110)
+            screen.blit(P_key,(350, 160))
+            draw_text('PAUSE', font2, WHITE, 450, 170)
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
         if main_m_state == "history":
-            draw_text('History', font, WHITE, 200, 200)
+            display_history(screen, history, (20,20),font2, WHITE)
+            screen.blit(history_imglab, (304,400))
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
             
