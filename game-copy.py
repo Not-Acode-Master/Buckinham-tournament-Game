@@ -34,6 +34,8 @@ menu_state = "main"
 main_m_state = "principal"
 clicked = False
 
+shooting = True
+
 # define player action variables
 moving_left = False
 moving_right = False
@@ -160,6 +162,7 @@ class Soldier(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.alive = True
         self.char_type = char_type
+        self.original_speed = speed
         self.speed = speed
         self.ammo = ammo
         self.an_col = an_col
@@ -204,6 +207,7 @@ class Soldier(pygame.sprite.Sprite):
     def update(self):
         self.update_animation()
         self.check_alive()
+        self.check_paused()
         #update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
@@ -300,7 +304,7 @@ class Soldier(pygame.sprite.Sprite):
                 self.idling = True
                 self.idling_counter = 50
             #check if the ai is near the player
-            if self.vision.colliderect(player.rect):
+            if self.vision.colliderect(player.rect) and shooting == True:
                 #stop running and face the plyer
                 self.update_action(0)
                 #shoot
@@ -362,8 +366,12 @@ class Soldier(pygame.sprite.Sprite):
             self.speed = 0
             self.alive = False
             self.update_action(3)
-            
         
+    def check_paused(self):
+        if game_paused == True:
+            self.speed = 0
+        else:
+            self.speed = self.original_speed
          
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
@@ -625,6 +633,7 @@ while run:
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_p and player.alive:
                 game_paused = True
+                shooting = False
             if event.key == pygame.K_a:
                 moving_left = True
             if event.key == pygame.K_d:
@@ -744,6 +753,7 @@ while run:
                     screen.fill(BG2)
                     if resume_button.draw(screen) and clicked == False:
                         game_paused = False
+                        shooting = True
                         clicked = True
                     if options_button.draw(screen) and clicked == False:
                         menu_state = "options"
