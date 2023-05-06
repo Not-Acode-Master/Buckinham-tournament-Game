@@ -362,6 +362,7 @@ class Soldier(pygame.sprite.Sprite):
             self.speed = 0
             self.alive = False
             self.update_action(3)
+            
         
          
     def draw(self):
@@ -391,7 +392,7 @@ class World():
                         decoration2 = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration2)
                     elif tile == 38:
-                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1, 5, 20, 100)
+                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.5, 5, 20, 100)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
                     elif tile == 36: #create enemies
@@ -579,12 +580,12 @@ exit_button = Button(304, 400, exit_img, 0.5)
 replay_button = Button(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 100, replay_img, 0.5)
 resume_button = Button(304, 125, resume_img, 0.5)
 options_button = Button(304, 250, options_img, 0.5)
-exit_button2 = Button(304, 375, exit_img, 0.5)
+exit_button2 = Button(304, 500, exit_img, 0.5)
 keys_button = Button(304, 220, keys_img, 0.5)
 audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
 back_button = Button(20, 530, back_img, 0.5)
-mainmenu_button = Button(304, 500, mainmenu_img, 0.5)
+mainmenu_button = Button(304, 375, mainmenu_img, 0.5)
 instructions_button = Button(304, 250, instructions_img, 0.5)
 history_button = Button(304, 320 ,history_img, 0.5)
 
@@ -782,7 +783,21 @@ while run:
                     #check if the options menu is open
                 if menu_state == "keys":
                     screen.fill(BG2)
-                    draw_text('Keys', font, WHITE, 200, 200)
+                    draw_text('CONTROLS', font2, BG, 320, 20)
+                    screen.blit(W_key,(50, 100))
+                    draw_text('JUMP', font2, WHITE, 150, 110)
+                    screen.blit(A_key,(50, 160))
+                    draw_text('MOVE LEFT', font2, WHITE, 150, 170)
+                    screen.blit(S_key,(50, 220))
+                    draw_text('CROUCH', font2, WHITE, 150, 230)
+                    screen.blit(D_key,(50, 280))
+                    draw_text('MOVE RIGHT', font2, WHITE, 150, 290)
+                    screen.blit(SPACE_key,(30, 380))
+                    draw_text('SHOOT', font2, WHITE, 170, 390)
+                    screen.blit(ESC_key,(350, 100))
+                    draw_text('QUIT GAME', font2, WHITE, 450, 110)
+                    screen.blit(P_key,(350, 160))
+                    draw_text('PAUSE', font2, WHITE, 450, 170)
                     if back_button.draw(screen) and clicked == False:
                         menu_state = "options"
                         clicked = True
