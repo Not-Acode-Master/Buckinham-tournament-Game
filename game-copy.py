@@ -552,6 +552,7 @@ class Portal(pygame.sprite.Sprite):
         
     def update(self):
         self.rect.x += screen_scroll
+        self.update_animation()
 
 class Button():
     def __init__(self, x, y, image, scale):
