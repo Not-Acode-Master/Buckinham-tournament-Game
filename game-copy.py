@@ -82,7 +82,7 @@ instructions_img = pygame.image.load('img//Buttons/instructions_button.png').con
 history_img = pygame.image.load('img//Buttons/history_button.png').convert_alpha()
 
 #backround
-bcimg = pygame.image.load('img/Backround/backgrounds/backround.png').convert_alpha()
+bcimg = pygame.image.load('img/Backround/backgrounds/background.png').convert_alpha()
 
 #pickup boxes
 
