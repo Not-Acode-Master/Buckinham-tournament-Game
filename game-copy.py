@@ -774,7 +774,7 @@ while run:
                         start_game = False
                         clicked = True
                         bg_scroll = 0
-                        #level = 1
+                        shooting = True
                         world_data = reset_level()
                         #load in level data and create world
                         with open(f'level{level}_data.csv', newline='') as csvfile:
