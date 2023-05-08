@@ -63,7 +63,7 @@ S_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/S.png').con
 D_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/D.png').convert_alpha(), (75,75))
 P_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/P.png').convert_alpha(), (75,75))
 SPACE_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/SPACE.png').convert_alpha(), (118,75))
-ESC_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/ESC.png').convert_alpha(), (75,75))
+ESC_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/ESC.png').convert_alpha(), (75,75))  
 
 
 
@@ -89,10 +89,10 @@ bcimg = pygame.image.load('img/Backround/backgrounds/background.png').convert_al
 
 health_box_img = pygame.image.load('img/icons/health_box.png').convert_alpha()
 ammo_box_img = pygame.image.load('img/icons/ammo_box.png').convert_alpha()
-item_boxes = {
-    'Health'    : health_box_img,
-    'Ammo'      : ammo_box_img
-}
+#item_boxes = {
+#    'Health'    : health_box_img,
+#    'Ammo'      : ammo_box_img
+#}
 
 #Define colors
 BG = (144, 201, 120)
@@ -411,10 +411,10 @@ class World():
                         enemy_group.add(enemy)
                         #portal = Portal(600, 245, 4)
                     elif tile == 26: #create ammo_box
-                        item_box = ItemBox('Ammo', x * TILE_SIZE, y * TILE_SIZE)
+                        item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Ammo', 1)
                         item_box_group.add(item_box)
                     elif tile == 37: #create health_box
-                        item_box = ItemBox('Health', x * TILE_SIZE, y * TILE_SIZE)
+                        item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Health', 1)
                         item_box_group.add(item_box)
                     elif tile == 27:#create exit
                         portal = Portal(x * TILE_SIZE, y * TILE_SIZE, 2)
@@ -438,25 +438,46 @@ class Decoration(pygame.sprite.Sprite):
         self.rect.x += screen_scroll
 
 class ItemBox(pygame.sprite.Sprite):
-    def __init__(self, item_type, x, y,):
+    def __init__(self, x, y, type,scale):
         pygame.sprite.Sprite.__init__(self)
-        self.item_type = item_type
-        self.image = item_boxes[self.item_type]
+        self.animation_list = []
+        self.frame_index = 0
+        self.update_time = pygame.time.get_ticks()
+        self.type = type
+        for i in range(3):
+            img = pygame.image.load(f'img/Boxes/{self.type}/{i}.png')
+            img = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
+            self.animation_list.append(img)
+        self.image = self.animation_list[self.frame_index]
         self.rect = self.image.get_rect()
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+        
+    def update_animation(self):
+        ANIMATION_COOLDOWN = 175
+        #update image depending on current frame
+        self.image = self.animation_list[self.frame_index]
+        #check if enought time has passed since the las updtes
+        if pygame.time.get_ticks() - self.update_time > ANIMATION_COOLDOWN:
+            self.update_time = pygame.time.get_ticks()
+            self.frame_index += 1
+        #if the animation has run out then reset back to the start
+        if self.frame_index >= len(self.animation_list):
+            self.frame_index = 0
+       
         
         
     def update(self):
         #scroll
+        self.update_animation()
         self.rect.x += screen_scroll
         #check if the player has picked up the box
         if pygame.sprite.collide_rect(self, player):
             #check what kind of box it was
-            if self.item_type == 'Health':
+            if self.type == 'Health':
                 player.health +=20
                 if player.health > player.max_health:
                     player.health = player.max_health
-            elif self.item_type == 'Ammo':
+            elif self.type == 'Ammo':
                 player.ammo +=15
             #delete the itembox
             self.kill()
