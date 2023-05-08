@@ -40,6 +40,7 @@ shooting = True
 moving_left = False
 moving_right = False
 shoot = False
+crouch = False
 
 
 #Load images
@@ -186,7 +187,7 @@ class Soldier(pygame.sprite.Sprite):
         self.idling_counter = 0
 
         #load all images for the players
-        animation_types = ['Idle', 'Run', 'Jump', 'Death']
+        animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Crouch']
         for animation in animation_types:
             #reset temporary list of images
             temp_list = []
@@ -211,6 +212,8 @@ class Soldier(pygame.sprite.Sprite):
         #update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
+        if crouch == True:
+            player.speed = 0
     
     
     def move(self, moving_left, moving_right):
@@ -643,6 +646,8 @@ while run:
                 shoot = True
             if event.key == pygame.K_w and player.alive:
                 player.jump = True
+            if event.key == pygame.K_s and player.alive:
+                crouch = True
             if event.key == pygame.K_ESCAPE:
                 run = False
         #key button released
@@ -651,6 +656,8 @@ while run:
                 moving_left = False
             if event.key == pygame.K_d:
                 moving_right = False
+            if event.key == pygame.K_s:
+                crouch = False
             if event.key == pygame.K_SPACE:
                 shoot = False
         if event.type == pygame.MOUSEBUTTONUP:
@@ -830,6 +837,8 @@ while run:
                     player.shoot()
                 if player.in_air:
                     player.update_action(2) # 2 means jump
+                if crouch:
+                    player.update_action(4)
                 elif moving_left or moving_right:
                     player.update_action(1) # 1 means run
                 else:
