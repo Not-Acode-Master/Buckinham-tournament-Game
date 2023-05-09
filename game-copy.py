@@ -407,7 +407,7 @@ class World():
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
                     elif tile == 36: #create enemies
-                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.5, 2, 20, 300)
+                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.75, 2, 20, 300)
                         enemy_group.add(enemy)
                         #portal = Portal(600, 245, 4)
                     elif tile == 26: #create ammo_box
@@ -453,7 +453,7 @@ class ItemBox(pygame.sprite.Sprite):
         self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
         
     def update_animation(self):
-        ANIMATION_COOLDOWN = 175
+        ANIMATION_COOLDOWN = 325
         #update image depending on current frame
         self.image = self.animation_list[self.frame_index]
         #check if enought time has passed since the las updtes
@@ -510,7 +510,7 @@ class Bullet(pygame.sprite.Sprite):
                 player.health -= 5
                 self.kill()
         for enemy in enemy_group:
-            if pygame.sprite.spritecollide(enemy, bullet_group, False): #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
+            if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive: #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
                 if player.alive:
                     enemy.health -= 25
                     self.kill()
