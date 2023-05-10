@@ -435,7 +435,8 @@ class World():
                         portal = Portal(x * TILE_SIZE, y * TILE_SIZE, 2)
                         portal_group.add(portal)
                     elif tile == 48:
-                        pass
+                        item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Shield', 1)
+                        item_box_group.add(item_box)
         
         return player, health_bar, bullet_bar, shield_bar
     
@@ -496,6 +497,10 @@ class ItemBox(pygame.sprite.Sprite):
                     player.health = player.max_health
             elif self.type == 'Ammo':
                 player.ammo +=15
+            elif self.type == 'Shield':
+                player.shield += 25
+                if player.shield > player.max_shield:
+                    player.shield = player.max_shield
             #delete the itembox
             self.kill()
 
