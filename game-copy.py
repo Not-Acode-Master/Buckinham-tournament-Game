@@ -33,6 +33,7 @@ game_paused = False
 menu_state = "main"
 main_m_state = "principal"
 clicked = False
+shield_active = False
 
 shooting = True
 
@@ -52,6 +53,9 @@ for x in range(TILE_TYPES):
     img_list.append(img)
 #hearts
 heart_img = pygame.image.load('img/icons/0.png').convert_alpha()
+#shield
+shield_img1 = pygame.image.load('img/icons/shield.png').convert_alpha()
+shield_img = pygame.transform.scale(shield_img1, (32, 32))
 #bullet
 bullet_img = pygame.image.load('img/icons/bullett.png').convert_alpha()
 bullet_imgg = pygame.image.load('img/icons/bullett.png').convert_alpha()
@@ -100,6 +104,7 @@ RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (102, 205, 0)
 BLACK = (0, 0, 0)
+BLUE = (52, 21, 252)
 BG2 = (125,38,205)
 
 #define font
@@ -171,6 +176,9 @@ class Soldier(pygame.sprite.Sprite):
         self.shoot_cooldown = 0
         self.health = 100 #check min 27 from video 4 (maybe may enemies will need less health)x
         self.max_health = self.health
+        self.shield = 100
+        self.max_shield = self.shield
+        self.shield_can_use = True
         self.direction = 1
         self.vel_y = 0
         self.jump = False
@@ -209,11 +217,14 @@ class Soldier(pygame.sprite.Sprite):
         self.update_animation()
         self.check_alive()
         self.check_paused()
+        self.check_shield()
         #update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
         if crouch == True:
             player.speed = 0
+        #if shield_active == True:
+            #print('a')
     
     
     def move(self, moving_left, moving_right):
@@ -375,7 +386,10 @@ class Soldier(pygame.sprite.Sprite):
             self.speed = 0
         else:
             self.speed = self.original_speed
-         
+    
+    def check_shield(self):
+        if self.shield <= 0:
+            self.shield_can_use = False
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
         
@@ -399,15 +413,16 @@ class World():
                     elif tile >= 9 and tile <= 25:
                         decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
-                    elif tile >= 39 and tile <= 48:
+                    elif tile >= 39 and tile <= 47:
                         decoration2 = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration2)
                     elif tile == 38:
                         player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.5, 5, 20, 100)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
+                        shield_bar = ShieldBar(220,10, player.shield, player.shield)
                     elif tile == 36: #create enemies
-                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.75, 2, 20, 300)
+                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.75, 2, 100, 300)
                         enemy_group.add(enemy)
                         #portal = Portal(600, 245, 4)
                     elif tile == 26: #create ammo_box
@@ -419,8 +434,10 @@ class World():
                     elif tile == 27:#create exit
                         portal = Portal(x * TILE_SIZE, y * TILE_SIZE, 2)
                         portal_group.add(portal)
+                    elif tile == 48:
+                        pass
         
-        return player, health_bar, bullet_bar
+        return player, health_bar, bullet_bar, shield_bar
     
     def draw(self):
         for tile in self.obstacle_list:
@@ -506,9 +523,16 @@ class Bullet(pygame.sprite.Sprite):
         
         #check collision with characters
         if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive:
+            if player.alive and shield_active == False:
                 player.health -= 5
                 self.kill()
+            if player.alive and shield_active == True:
+                if player.shield_can_use == True:
+                    player.shield -=5
+                    self.kill()
+                if player.shield_can_use == False:
+                    player.health -= 5
+                    self.kill()
         for enemy in enemy_group:
             if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive: #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
                 if player.alive:
@@ -533,6 +557,25 @@ class HealthBar():
         #heart_img = pygame.image.load('img/icons/0.png')
         #heart_img = pygame.transform.scale(heart_img, (36, 36))
         screen.blit(heart_img, (0, 3))
+
+class ShieldBar():
+    def __init__(self, x, y, shield, max_shield):
+        self.x = x
+        self.y = y
+        self.shield = shield
+        self.max_shield = max_shield
+        
+    def draw(self, shield):
+        #update with new shield
+        self.shield = shield
+        #calculate shield ratio
+        ratio = self.shield / self.max_shield
+        pygame.draw.rect(screen, BLACK, (self.x - 2, self.y - 2, 154, 20))
+        pygame.draw.rect(screen, WHITE, (self.x, self.y, 150, 14))
+        pygame.draw.rect(screen, BLUE, (self.x, self.y, 150* ratio, 14))
+        screen.blit(shield_img, (200, 5))
+
+        
 
 class BulletBar():
     def __init__(self, x, y, img):
@@ -644,7 +687,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
             world_data[x][y] = int(tile)
 
 world = World()
-player, health_bar, bullet_bar = world.process_data(world_data)
+player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
 
 
 run = True
@@ -669,6 +712,7 @@ while run:
                 player.jump = True
             if event.key == pygame.K_s and player.alive:
                 crouch = True
+                shield_active = True
             if event.key == pygame.K_ESCAPE:
                 run = False
         #key button released
@@ -679,6 +723,7 @@ while run:
                 moving_right = False
             if event.key == pygame.K_s:
                 crouch = False
+                shield_active = False
             if event.key == pygame.K_SPACE:
                 shoot = False
         if event.type == pygame.MOUSEBUTTONUP:
@@ -744,6 +789,9 @@ while run:
         health_bar.draw(player.health)
         #show ammo
         bullet_bar.draw()
+        #show shield
+        shield_bar.draw(player.shield)
+        
         for x in range(player.ammo):
             screen.blit(bullet_imgg, (35 + (x * 15), 50))
         #draw_text('Health: ', font, WHITE, 10, 60)
@@ -804,7 +852,7 @@ while run:
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        player, health_bar, bullet_bar = world.process_data(world_data)
+                        player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
                 if menu_state == "options":
                     screen.fill(BG2)
                     if keys_button.draw(screen) and clicked == False:
@@ -879,7 +927,7 @@ while run:
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        player, health_bar, bullet_bar = world.process_data(world_data)
+                        player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
                             
         else:
             screen_scroll = 0
@@ -894,7 +942,7 @@ while run:
                         for y, tile in enumerate(row):
                             world_data[x][y] = int(tile)
                 world = World()
-                player, health_bar, bullet_bar = world.process_data(world_data)
+                player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
             
             
             
