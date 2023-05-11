@@ -195,7 +195,7 @@ class Soldier(pygame.sprite.Sprite):
         self.idling_counter = 0
 
         #load all images for the players
-        animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Crouch']
+        animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Crouch', 'Crouch2']
         for animation in animation_types:
             #reset temporary list of images
             temp_list = []
@@ -390,6 +390,8 @@ class Soldier(pygame.sprite.Sprite):
     def check_shield(self):
         if self.shield <= 0:
             self.shield_can_use = False
+        if self.shield > 0:
+            self.shield_can_use = True
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
         
@@ -911,8 +913,10 @@ while run:
                     player.shoot()
                 if player.in_air:
                     player.update_action(2) # 2 means jump
-                if crouch:
+                if crouch and player.shield_can_use == True:
                     player.update_action(4)
+                elif crouch and player.shield_can_use == False:
+                    player.update_action(5)
                 elif moving_left or moving_right:
                     player.update_action(1) # 1 means run
                 else:
