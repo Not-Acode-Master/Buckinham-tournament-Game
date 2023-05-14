@@ -10,8 +10,8 @@ fps = 60
 
 
 
-SCREEN_WIDTH = 800
-SCREEN_HEIGHT = 608
+SCREEN_WIDTH = 766
+SCREEN_HEIGHT = 576 #608
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Plataformer')
@@ -20,10 +20,10 @@ pygame.display.set_caption('Plataformer')
 
 GRAVITY = 0.75
 SCROLL_THRESH = 200
-ROWS = 19
-COLS = 75
+ROWS = 12 #19
+COLS = 26 #75
 TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 49
+TILE_TYPES = 21 #49
 MAX_LEVELS = 2
 screen_scroll = 0
 bg_scroll = 0
@@ -45,11 +45,11 @@ crouch = False
 
 
 #Load images
-#store tils in a list
+#store tiles in a list
 img_list = []
 for x in range(TILE_TYPES):
-    img = pygame.image.load(f'img/tilesets/Tile_set_indimg/sprite_{x}.png')
-    img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
+    img = pygame.image.load(f'img/tilesets/Tile_img/sprite_{x}.png')
+    #img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
 #hearts
 heart_img = pygame.image.load('img/icons/0.png').convert_alpha()
@@ -410,33 +410,30 @@ class World():
                     img_rect.x = x * TILE_SIZE
                     img_rect.y = y * TILE_SIZE
                     tile_data = (img, img_rect)
-                    if tile >= 1 and tile <= 8:
+                    if tile >= 0 and tile <= 5:
                         self.obstacle_list.append(tile_data)
-                    elif tile >= 9 and tile <= 25:
+                    elif tile >= 6 and tile <= 14:
                         decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
-                    elif tile >= 39 and tile <= 47:
-                        decoration2 = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
-                        decoration_group.add(decoration2)
-                    elif tile == 38:
-                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.5, 5, 20, 100)
+                    elif tile == 18:
+                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.4, 5, 20, 100)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
                         shield_bar = ShieldBar(220,10, player.shield, player.shield)
-                    elif tile == 36: #create enemies
+                    elif tile == 19: #create enemies
                         enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.75, 2, 100, 300)
                         enemy_group.add(enemy)
                         #portal = Portal(600, 245, 4)
-                    elif tile == 26: #create ammo_box
+                    elif tile == 16: #create ammo_box
                         item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Ammo', 1)
                         item_box_group.add(item_box)
-                    elif tile == 37: #create health_box
+                    elif tile == 17: #create health_box
                         item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Health', 1)
                         item_box_group.add(item_box)
-                    elif tile == 27:#create exit
+                    elif tile == 20:#create exit
                         portal = Portal(x * TILE_SIZE, y * TILE_SIZE, 2)
                         portal_group.add(portal)
-                    elif tile == 48:
+                    elif tile == 15:
                         item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Shield', 1)
                         item_box_group.add(item_box)
         
