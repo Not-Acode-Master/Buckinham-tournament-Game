@@ -45,6 +45,9 @@ crouch = False
 grenade = False
 grenade_thrown = False
 
+gun1_active = True
+gun2_active = False
+change_gun = False
 
 #Load images
 #store tiles in a list
@@ -199,7 +202,7 @@ class Soldier(pygame.sprite.Sprite):
         self.idling_counter = 0
 
         #load all images for the players
-        animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Crouch', 'Crouch2']
+        animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Shield', 'Crouch', 'Idle2', 'Run2', 'Jump2', 'Death2', 'Shield2', 'Crouch2']
         for animation in animation_types:
             #reset temporary list of images
             temp_list = []
@@ -830,6 +833,12 @@ while run:
             if event.key == pygame.K_q:
                 grenade = True
                 #grenade_thrown = False
+            if event.key == pygame.K_1:
+                gun2_active = False
+                gun1_active = True
+            if event.key == pygame.K_2:
+                gun2_active = True
+                gun1_active = False
             if event.key == pygame.K_ESCAPE:
                 run = False
         #key button released
@@ -1029,29 +1038,52 @@ while run:
                         menu_state = "options"
                         clicked = True
             else:
+                if gun1_active == True and gun2_active == False:
             #shoot bullets
-                if shoot:
-                    player.shoot()
-                elif grenade and grenade_thrown == False and player.grenades > 0:
-                    grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
-                                player.rect.top, player.direction)
-                    grenade_group.add(grenade)
-                    grenade_thrown = True
-                    #reduce granades
-                    player.grenades -= 1
-                if player.in_air:
-                    player.update_action(2) # 2 means jump
-                if crouch and player.shield_can_use == True:
-                    player.update_action(4)
-                elif crouch and player.shield_can_use == False:
-                    player.update_action(5)
-                elif moving_left or moving_right:
-                    player.update_action(1) # 1 means run
-                else:
-                    player.update_action(0) # 0 means idle
-                screen_scroll, level_complete = player.move(moving_left, moving_right)
-                bg_scroll -= screen_scroll
-                #check if the player has completed the level
+                    if shoot:
+                        player.shoot()
+                    elif grenade and grenade_thrown == False and player.grenades > 0:
+                        grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
+                                    player.rect.top, player.direction)
+                        grenade_group.add(grenade)
+                        grenade_thrown = True
+                        #reduce granades
+                        player.grenades -= 1
+                    if player.in_air:
+                        player.update_action(2) # 2 means jump
+                    if crouch and player.shield_can_use == True:
+                        player.update_action(4)
+                    elif crouch and player.shield_can_use == False:
+                        player.update_action(5)
+                    elif moving_left or moving_right:
+                        player.update_action(1) # 1 means run
+                    else:
+                        player.update_action(0) # 0 means idle
+                    screen_scroll, level_complete = player.move(moving_left, moving_right)
+                    bg_scroll -= screen_scroll
+                    #check if the player has completed the level
+                if gun2_active == True and gun1_active == False:
+                    if shoot:
+                        player.shoot()
+                    elif grenade and grenade_thrown == False and player.grenades > 0:
+                        grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
+                                    player.rect.top, player.direction)
+                        grenade_group.add(grenade)
+                        grenade_thrown = True
+                        #reduce granades
+                        player.grenades -= 1
+                    if player.in_air:
+                        player.update_action(8) # 8 means jump2
+                    if crouch and player.shield_can_use == True:
+                        player.update_action(10)
+                    elif crouch and player.shield_can_use == False:
+                        player.update_action(11)
+                    elif moving_left or moving_right:
+                        player.update_action(7) # 7 means run2
+                    else:
+                        player.update_action(6) # 6 means idle2
+                    screen_scroll, level_complete = player.move(moving_left, moving_right)
+                    bg_scroll -= screen_scroll
                 if level_complete:
                     level += 1
                     bg_scroll = 0
