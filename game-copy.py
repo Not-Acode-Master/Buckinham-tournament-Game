@@ -659,6 +659,7 @@ class Grenade(pygame.sprite.Sprite):
         self.direction = direction
     
     def update(self):
+        self.rect.x += screen_scroll
         self.vel_y += GRAVITY
         dx = self.direction * self.speed
         dy = self.vel_y
@@ -716,6 +717,7 @@ class Explosion(pygame.sprite.Sprite):
         self.counter = 0
     
     def update(self):
+        self.rect.x += screen_scroll
         EXPLOSION_SPEED = 4
         #update explosion animation
         self.counter += 1
