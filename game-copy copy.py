@@ -174,10 +174,10 @@ class Soldier(pygame.sprite.Sprite):
         self.original_speed = speed
         self.speed = speed
         self.ammo = ammo
-        self.grenades = grenades
         self.an_col = an_col
         self.start_ammo =ammo
         self.shoot_cooldown = 0
+        self.grenades = grenades
         self.health = 100 #check min 27 from video 4 (maybe may enemies will need less health)x
         self.max_health = self.health
         self.shield = 100
@@ -416,7 +416,7 @@ class World():
                     tile_data = (img, img_rect)
                     if tile >= 0 and tile <= 5:
                         self.obstacle_list.append(tile_data)
-                    elif tile >= 6 and tile <= 13:
+                    elif tile >= 6 and tile <= 14:
                         decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 18:
@@ -424,7 +424,6 @@ class World():
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
                         shield_bar = ShieldBar(220,10, player.shield, player.shield)
-                        bombar = BombBar(5, 70,'img/icons/finalgrenade.png')
                     elif tile == 19: #create enemies
                         enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.75, 2, 100, 300, 0)
                         enemy_group.add(enemy)
@@ -441,11 +440,8 @@ class World():
                     elif tile == 15:
                         item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Shield', 1)
                         item_box_group.add(item_box)
-                    elif tile == 14:
-                        item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Grenade', 1)
-                        item_box_group.add(item_box)
         
-        return player, health_bar, bullet_bar, shield_bar, bombar
+        return player, health_bar, bullet_bar, shield_bar
     
     def draw(self):
         for tile in self.obstacle_list:
@@ -508,12 +504,8 @@ class ItemBox(pygame.sprite.Sprite):
                 player.shield += 25
                 if player.shield > player.max_shield:
                     player.shield = player.max_shield
-            elif self.type == 'Grenade':
-                player.grenades += 5
             #delete the itembox
             self.kill()
-
-
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
@@ -552,6 +544,7 @@ class Bullet(pygame.sprite.Sprite):
                 if player.alive:
                     enemy.health -= 25
                     self.kill()
+        
 
 class HealthBar():
     def __init__(self, x, y, health, max_health):
@@ -589,6 +582,17 @@ class ShieldBar():
         pygame.draw.rect(screen, BLUE, (self.x, self.y, 150* ratio, 14))
         screen.blit(shield_img, (200, 5))
 
+class Grenade(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.timer = 100
+        self.vel_y = -11
+        self.speed = 7
+        self.image = grenade_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction
+
         
 
 class BulletBar():
@@ -599,16 +603,6 @@ class BulletBar():
     
     def draw(self):
         img = pygame.transform.scale(self.img, (32, 32))
-        screen.blit(img, (self.x, self.y))
-
-class BombBar():
-    def __init__(self, x, y, img):
-        self.img = pygame.image.load(img)
-        self.x = x
-        self.y = y
-    
-    def draw(self):
-        img = pygame.transform.scale(self.img, (20, 36))
         screen.blit(img, (self.x, self.y))
         
 class Portal(pygame.sprite.Sprite):
@@ -644,91 +638,6 @@ class Portal(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += screen_scroll
         self.update_animation()
-
-class Grenade(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction):
-        pygame.sprite.Sprite.__init__(self)
-        self.timer = 100
-        self.vel_y = -11
-        self.speed = 7
-        self.image = grenade_img
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.width = self.image.get_width()
-        self.height = self.image.get_height()
-        self.direction = direction
-    
-    def update(self):
-        self.vel_y += GRAVITY
-        dx = self.direction * self.speed
-        dy = self.vel_y
-        #check for collision with level
-        for tile in world.obstacle_list:
-            #check collision with walls
-            if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
-                self.direction *= -1
-                dx = self.direction * self.speed
-        
-            if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
-                self.speed = 0
-                #check if below the ground, i.e thrown up
-                if self.vel_y < 0:
-                    self.vel_y = 0
-                    dy = tile[1].bottom - self.rect.top
-                #check if above the ground, i.e falling
-                elif self.vel_y >= 0:
-                    self.vel_y = 0
-                    dy = tile[1].top - self.rect.bottom
-            
-            
-        #update grande position
-        self.rect.x += dx
-        self.rect.y += dy
-        
-        #countdown
-        self.timer -= 1
-        if self.timer <= 0:
-            self.kill()
-            explosion = Explosion(self.rect.x, self.rect.y, 0.5)
-            explosion_group.add(explosion)
-            #do damage to anyone that is nearby
-            if abs(self.rect.centerx - player.rect.centerx) < TILE_SIZE * 2 and \
-                abs(self.rect.centery - player.rect.centery) < TILE_SIZE * 2:
-                    player.health -= 50
-                
-            for enemy in enemy_group:
-                if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
-                    abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
-                        enemy.health -= 50
-
-class Explosion(pygame.sprite.Sprite):
-    def __init__(self, x, y, scale):
-        pygame.sprite.Sprite.__init__(self)
-        self.imgs = []
-        for num in range(0,12):
-            img = pygame.image.load(f'img/explosions/exp_{num}.png').convert_alpha()
-            img = pygame.transform.scale(img, (int(img.get_width() * scale), int(img.get_height() * scale)))
-            self.imgs.append(img)
-        self.frame_index = 0
-        self.image = self.imgs[self.frame_index]
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.counter = 0
-    
-    def update(self):
-        EXPLOSION_SPEED = 4
-        #update explosion animation
-        self.counter += 1
-        
-        if self.counter >= EXPLOSION_SPEED:
-            self.counter = 0
-            self.frame_index += 1
-            #if the animation is complete then delete the explosion
-            if self.frame_index >= len(self.imgs):
-                self.kill()
-            else:
-                self.image = self.imgs[self.frame_index]
-        
 
 class Button():
     def __init__(self, x, y, image, scale):
@@ -783,8 +692,6 @@ item_box_group = pygame.sprite.Group()
 decoration_group = pygame.sprite.Group()
 portal_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
-explosion_group = pygame.sprite.Group()
-
 
 #create empty tile list
 world_data = []
@@ -799,7 +706,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
             world_data[x][y] = int(tile)
 
 world = World()
-player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
 
 
 run = True
@@ -824,10 +731,8 @@ while run:
                 player.jump = True
             if event.key == pygame.K_s and player.alive:
                 crouch = True
-                shield_active = True
             if event.key == pygame.K_q:
                 grenade = True
-                #grenade_thrown = False
             if event.key == pygame.K_ESCAPE:
                 run = False
         #key button released
@@ -909,13 +814,9 @@ while run:
         bullet_bar.draw()
         #show shield
         shield_bar.draw(player.shield)
-        #show bomb
-        bombar.draw()
         
         for x in range(player.ammo):
             screen.blit(bullet_imgg, (35 + (x * 15), 50))
-        for x in range(player.grenades):
-            screen.blit(grenade_img, (35 + (x * 15), 75))
         #draw_text('Health: ', font, WHITE, 10, 60)
         
         #loading player
@@ -944,8 +845,6 @@ while run:
         portal_group.draw(screen)
         grenade_group.update()
         grenade_group.draw(screen)
-        explosion_group.update()
-        explosion_group.draw(screen)
         
         
         #update the player actions
@@ -978,7 +877,7 @@ while run:
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
                 if menu_state == "options":
                     screen.fill(BG2)
                     if keys_button.draw(screen) and clicked == False:
@@ -1062,7 +961,7 @@ while run:
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
                             
         else:
             screen_scroll = 0
@@ -1077,7 +976,7 @@ while run:
                         for y, tile in enumerate(row):
                             world_data[x][y] = int(tile)
                 world = World()
-                player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                player, health_bar, bullet_bar, shield_bar = world.process_data(world_data)
             
             
             
