@@ -64,6 +64,8 @@ shield_img = pygame.transform.scale(shield_img1, (32, 32))
 #bullet
 bullet_img = pygame.image.load('img/icons/bullett.png').convert_alpha()
 bullet_imgg = pygame.image.load('img/icons/bullett.png').convert_alpha()
+
+bullet2_img = pygame.image.load('img/icons/bullet2.png').convert_alpha()
 #grenade
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 #Keybinding images
@@ -317,6 +319,13 @@ class Soldier(pygame.sprite.Sprite):
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
+    def shoot2(self): # revisar aproximadamente minuto 15 en adelante ya que probablemnte no se necesite para mis sprites
+        if self.shoot_cooldown == 0 and self.ammo > 0:
+            self.shoot_cooldown = 20
+            bullet = Bullet2(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            bullet_group.add(bullet)
+            #reduce ammo
+            self.ammo -= 1
             
     def ai(self):
         if self.alive and player.alive:
@@ -554,6 +563,46 @@ class Bullet(pygame.sprite.Sprite):
             if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive: #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
                 if player.alive:
                     enemy.health -= 25
+                    self.kill()
+
+class Bullet2(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction):
+        pygame.sprite.Sprite.__init__(self)
+        self.speed = 10
+        self.image = bullet2_img
+        self.rect = self.image.get_rect()
+        self.rect.center = (x, y)
+        self.direction = direction
+        
+    def update(self):
+        #move the bullet
+        self.rect.x += (self.direction * self.speed) + screen_scroll
+        #check if bullet has gone of the screen
+        if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
+            self.kill()
+        if self.rect.right > player.rect.centerx + 100 or self.rect.left < player.rect.centerx - 100:
+            self.kill()
+        #check for collision with level
+        for tile in world.obstacle_list:
+            if tile[1].colliderect(self.rect):
+                self.kill()
+        
+        #check collision with characters
+        if pygame.sprite.spritecollide(player, bullet_group, False):
+            if player.alive and shield_active == False:
+                player.health -= 5
+                self.kill()
+            if player.alive and shield_active == True:
+                if player.shield_can_use == True:
+                    player.shield -=5
+                    self.kill()
+                if player.shield_can_use == False:
+                    player.health -= 5
+                    self.kill()
+        for enemy in enemy_group:
+            if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive: #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
+                if player.alive:
+                    enemy.health -= 50
                     self.kill()
 
 class HealthBar():
@@ -1064,7 +1113,7 @@ while run:
                     #check if the player has completed the level
                 if gun2_active == True and gun1_active == False:
                     if shoot:
-                        player.shoot()
+                        player.shoot2()
                     elif grenade and grenade_thrown == False and player.grenades > 0:
                         grenade = Grenade(player.rect.centerx + (0.5 * player.rect.size[0] * player.direction),\
                                     player.rect.top, player.direction)
