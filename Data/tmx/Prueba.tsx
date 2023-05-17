@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<tileset version="1.10" tiledversion="1.10.1" name="Prueba" tilewidth="64" tileheight="64" tilecount="21" columns="0">
+<tileset version="1.10" tiledversion="1.10.1" name="Prueba" tilewidth="160" tileheight="96" tilecount="23" columns="0">
  <grid orientation="orthogonal" width="1" height="1"/>
  <tile id="0">
   <image width="48" height="48" source="../../img/tilesets/Tile_img/sprite_0.png"/>
@@ -56,12 +56,18 @@
   <image width="48" height="48" source="../../img/tilesets/Tile_img/sprite_17.png"/>
  </tile>
  <tile id="18">
-  <image width="28" height="33" source="../../img/tilesets/Tile_img/sprite_18.png"/>
+  <image width="48" height="48" source="../../img/tilesets/Tile_img/sprite_18.png"/>
  </tile>
  <tile id="19">
-  <image width="64" height="64" source="../../img/tilesets/Tile_img/sprite_19.png"/>
+  <image width="28" height="33" source="../../img/tilesets/Tile_img/sprite_19.png"/>
  </tile>
  <tile id="20">
-  <image width="40" height="40" source="../../img/tilesets/Tile_img/sprite_20.png"/>
+  <image width="64" height="64" source="../../img/tilesets/Tile_img/sprite_20.png"/>
+ </tile>
+ <tile id="21">
+  <image width="160" height="96" source="../../img/tilesets/Tile_img/sprite_21.png"/>
+ </tile>
+ <tile id="22">
+  <image width="40" height="40" source="../../img/tilesets/Tile_img/sprite_22.png"/>
  </tile>
 </tileset>
