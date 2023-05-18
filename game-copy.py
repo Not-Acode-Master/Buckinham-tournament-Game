@@ -530,7 +530,15 @@ class Boss(pygame.sprite.Sprite):
     def basicshot(self):
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 40
-            bullet = Bullet3(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            bullet = Bullet3(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction)
+            bullet_group.add(bullet)
+            #reduce ammo
+            self.ammo -= 1
+    
+    def damagedshot(self):
+        if self.shoot_cooldown == 0 and self.ammo > 0:
+            self.shoot_cooldown = 100
+            bullet = Bullet3(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
@@ -541,11 +549,14 @@ class Boss(pygame.sprite.Sprite):
                 self.update_action(0) #0 is idle
                 self.idling = True
                 self.idling_counter = 50
-            if self.vision.colliderect(player.rect) and shooting == True:
+            if self.vision.colliderect(player.rect) and shooting == True and self.health > 50:
                 #stop running and face the player
                 self.update_action(6)
                 #shoot
                 self.basicshot()
+            elif self.vision.colliderect(player.rect) and shooting == True and self.health <= 50:
+                self.update_action(7)
+                self.damagedshot()
             else:
                 if self.idling == False:
                     if self.direction == 1:
@@ -554,10 +565,13 @@ class Boss(pygame.sprite.Sprite):
                         boss_moving_right = False
                     boss_moving_left = not boss_moving_right
                     self.move(boss_moving_left, boss_moving_right)
-                    self.update_action(4) # 4 means run
+                    if self.health > 50:
+                        self.update_action(4) # 4 means run
+                    if self.health <= 50:
+                        self.update_action(2)
                     self.move_counter += 1
                     #update boss vision as it moves
-                    self.vision.center = (self.rect.centerx + 75 * self.direction, self.rect.centery)
+                    self.vision.center = (self.rect.centerx + 75 * self.direction, self.rect.centery + 20)
                     #pygame.draw.rect(screen, RED, self.vision)
 
                     if self.move_counter > TILE_SIZE:
@@ -661,6 +675,7 @@ class World():
                     elif tile == 21:
                         bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1, 2, 1000, 150, 0)
                         boss_group.add(bossa)
+                        boss_bar = bossbar(300, 10, bossa.health, bossa.max_health)
         
         return player, health_bar, bullet_bar, shield_bar, bombar
     
@@ -836,16 +851,28 @@ class Bullet3(pygame.sprite.Sprite):
         
         #check collision with characters
         if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive and shield_active == False:
-                player.health -= 50
-                self.kill()
-            if player.alive and shield_active == True:
-                if player.shield_can_use == True:
-                    player.shield -= 50
+            if bossa.health > 50:
+                if player.alive and shield_active == False:
+                    player.health -= 25
                     self.kill()
-                if player.shield_can_use == False:
+                if player.alive and shield_active == True:
+                    if player.shield_can_use == True:
+                        player.shield -= 25
+                        self.kill()
+                    if player.shield_can_use == False:
+                        player.health -= 25
+                        self.kill()
+            if bossa.health <= 50:
+                if player.alive and shield_active == False:
                     player.health -= 50
                     self.kill()
+                if player.alive and shield_active == True:
+                    if player.shield_can_use == True:
+                        player.shield -= 50
+                        self.kill()
+                    if player.shield_can_use == False:
+                        player.health -= 50
+                        self.kill()
 
 class HealthBar():
     def __init__(self, x, y, health, max_health):
@@ -883,6 +910,24 @@ class ShieldBar():
         pygame.draw.rect(screen, BLUE, (self.x, self.y, 150* ratio, 14))
         screen.blit(shield_img, (200, 5))
 
+class bossbar():
+    def __init__(self, x, y, boss_health, boss_maxhealth):
+        self.x = x
+        self.y = y
+        self.boss_health = boss_health
+        self.boss_maxhealth = boss_maxhealth
+    
+    def draw(self, boss_health):
+        #update with new health
+        self.self.boss_health = boss_health
+        #calculate health ratio
+        ratio = self.boss_health / self.bossmax_health
+        pygame.draw.rect(screen, BLACK, (self.x - 2, self.y - 2, 154, 20))
+        pygame.draw.rect(screen, RED, (self.x, self.y, 150, 14))
+        pygame.draw.rect(screen, GREEN, (self.x, self.y, 150* ratio, 14))
+        #heart_img = pygame.image.load('img/icons/0.png')
+        #heart_img = pygame.transform.scale(heart_img, (36, 36))
+        #screen.blit(heart_img, (0, 3))
         
 
 class BulletBar():
