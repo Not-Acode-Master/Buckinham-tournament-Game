@@ -675,9 +675,12 @@ class World():
                     elif tile == 21:
                         bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1, 2, 1000, 150, 0)
                         boss_group.add(bossa)
-                        boss_bar = bossbar(300, 10, bossa.health, bossa.max_health)
-        
-        return player, health_bar, bullet_bar, shield_bar, bombar
+                        bossa_bar = Bossbar(10, 200, bossa.health, bossa.health)
+                        
+        if level == 1:
+            return player, health_bar, bullet_bar, shield_bar, bombar
+        if level == 2:
+            return player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar
     
     def draw(self):
         for tile in self.obstacle_list:
@@ -910,24 +913,21 @@ class ShieldBar():
         pygame.draw.rect(screen, BLUE, (self.x, self.y, 150* ratio, 14))
         screen.blit(shield_img, (200, 5))
 
-class bossbar():
-    def __init__(self, x, y, boss_health, boss_maxhealth):
+class Bossbar():
+    def __init__(self, x, y, health, max_health):
         self.x = x
         self.y = y
-        self.boss_health = boss_health
-        self.boss_maxhealth = boss_maxhealth
-    
-    def draw(self, boss_health):
+        self.health = health
+        self.max_health = max_health
+        
+    def draw(self, health):
         #update with new health
-        self.self.boss_health = boss_health
+        self.health = health
         #calculate health ratio
-        ratio = self.boss_health / self.bossmax_health
+        ratio = self.health / self.max_health
         pygame.draw.rect(screen, BLACK, (self.x - 2, self.y - 2, 154, 20))
         pygame.draw.rect(screen, RED, (self.x, self.y, 150, 14))
         pygame.draw.rect(screen, GREEN, (self.x, self.y, 150* ratio, 14))
-        #heart_img = pygame.image.load('img/icons/0.png')
-        #heart_img = pygame.transform.scale(heart_img, (36, 36))
-        #screen.blit(heart_img, (0, 3))
         
 
 class BulletBar():
@@ -1261,6 +1261,7 @@ while run:
         #show bomb
         bombar.draw()
         
+        
         for x in range(player.ammo):
             screen.blit(bullet_imgg, (35 + (x * 15), 50))
         for x in range(player.grenades):
@@ -1282,7 +1283,8 @@ while run:
             bossa.automove()
             bossa.draw()
             bossa.update()
-        
+            bossa_bar.draw(bossa.health)
+            
         #loading portal
         #portal.draw()
         #portal.update_animation()
@@ -1332,7 +1334,10 @@ while run:
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 1:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 2:
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                 if menu_state == "options":
                     screen.fill(BG2)
                     if keys_button.draw(screen) and clicked == False:
@@ -1439,7 +1444,8 @@ while run:
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
                         world = World()
-                        player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 2:
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                             
         else:
             screen_scroll = 0
