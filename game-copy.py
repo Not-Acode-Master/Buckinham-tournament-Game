@@ -10,7 +10,7 @@ fps = 60
 
 
 
-SCREEN_WIDTH = 766
+SCREEN_WIDTH = 768
 SCREEN_HEIGHT = 576 #608
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -61,6 +61,9 @@ heart_img = pygame.image.load('img/icons/0.png').convert_alpha()
 #shield
 shield_img1 = pygame.image.load('img/icons/shield.png').convert_alpha()
 shield_img = pygame.transform.scale(shield_img1, (32, 32))
+#skyll img
+skull_img1 = pygame.image.load('img/icons/skull.png')
+skull_img = pygame.transform.scale(skull_img1, (64, 64))
 #bullet
 bullet_img = pygame.image.load('img/icons/bullett.png').convert_alpha()
 bullet_imgg = pygame.image.load('img/icons/bullett.png').convert_alpha()
@@ -228,6 +231,7 @@ class Soldier(pygame.sprite.Sprite):
         self.check_alive()
         self.check_paused()
         self.check_shield()
+        self.check_boss()
         #update cooldown
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
@@ -288,7 +292,7 @@ class Soldier(pygame.sprite.Sprite):
         level_complete = False
         if pygame.sprite.spritecollide(self, portal_group, False):
             level_complete = True
-        
+
         
         #check if fallen off the map
         if self.rect.bottom > SCREEN_HEIGHT:
@@ -409,6 +413,9 @@ class Soldier(pygame.sprite.Sprite):
             self.shield_can_use = False
         if self.shield > 0:
             self.shield_can_use = True
+    def check_boss(self):
+        if pygame.sprite.spritecollide(self, boss_group, False) and bossa.alive:
+            self.health = 0
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
         
@@ -514,8 +521,7 @@ class Boss(pygame.sprite.Sprite):
         
         #check for collision with portal
         # level_complete = False
-        # if pygame.sprite.spritecollide(self, portal_group, False):
-        #     level_complete = True
+    
         
         #check if fallen of the map
         if self.rect.bottom > SCREEN_HEIGHT:
@@ -675,7 +681,7 @@ class World():
                     elif tile == 21:
                         bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1, 2, 1000, 150, 0)
                         boss_group.add(bossa)
-                        bossa_bar = Bossbar(10, 200, bossa.health, bossa.health)
+                        bossa_bar = Bossbar(300, 200, bossa.health, bossa.health)
                         
         if level == 1:
             return player, health_bar, bullet_bar, shield_bar, bombar
@@ -925,10 +931,13 @@ class Bossbar():
         self.health = health
         #calculate health ratio
         ratio = self.health / self.max_health
+        
         pygame.draw.rect(screen, BLACK, (self.x - 2, self.y - 2, 154, 20))
         pygame.draw.rect(screen, RED, (self.x, self.y, 150, 14))
         pygame.draw.rect(screen, GREEN, (self.x, self.y, 150* ratio, 14))
+        screen.blit(skull_img, (self.x - 50, 175))
         
+        self.x += screen_scroll
 
 class BulletBar():
     def __init__(self, x, y, img):
@@ -1040,6 +1049,11 @@ class Grenade(pygame.sprite.Sprite):
                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
                     abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
                         enemy.health -= 50
+            if level == 2:           
+                if abs(self.rect.centerx - bossa.rect.centerx) < TILE_SIZE * 2 and \
+                        abs(self.rect.centery - bossa.rect.centery) < TILE_SIZE * 2:
+                            bossa.health -= 25
+            
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -1460,7 +1474,10 @@ while run:
                         for y, tile in enumerate(row):
                             world_data[x][y] = int(tile)
                 world = World()
-                player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                if level == 1:
+                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                if level == 2:
+                    player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
             
             
             
