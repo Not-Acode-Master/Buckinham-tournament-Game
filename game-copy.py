@@ -164,7 +164,7 @@ def reset_level():
     item_box_group.empty()
     decoration_group.empty()
     portal_group.empty()
-    boss_group.empty()
+    boss1_group.empty()
     
     #create empty tile list
     data = []
@@ -414,7 +414,7 @@ class Soldier(pygame.sprite.Sprite):
         if self.shield > 0:
             self.shield_can_use = True
     def check_boss(self):
-        if pygame.sprite.spritecollide(self, boss_group, False) and bossa.alive:
+        if pygame.sprite.spritecollide(self, boss1_group, False) and bossa.alive:
             self.health = 0
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
@@ -680,7 +680,7 @@ class World():
                         item_box_group.add(item_box)
                     elif tile == 21:
                         bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1, 2, 1000, 150, 0)
-                        boss_group.add(bossa)
+                        boss1_group.add(bossa)
                         bossa_bar = Bossbar(300, 200, bossa.health, bossa.health)
                         
         if level == 1:
@@ -793,7 +793,7 @@ class Bullet(pygame.sprite.Sprite):
                 if player.alive:
                     enemy.health -= 25
                     self.kill()
-        for bossa in boss_group:
+        for bossa in boss1_group:
             if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
                 if player.alive:
                     bossa.health -= 25
@@ -1134,7 +1134,7 @@ history_button = Button(304, 320 ,history_img, 0.5)
 #create sprite groups
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
-boss_group = pygame.sprite.Group()
+boss1_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
 decoration_group = pygame.sprite.Group()
 portal_group = pygame.sprite.Group()
@@ -1293,7 +1293,7 @@ while run:
             enemy.draw()
             enemy.update()
         
-        for bossa in boss_group:
+        for bossa in boss1_group:
             bossa.automove()
             bossa.draw()
             bossa.update()
