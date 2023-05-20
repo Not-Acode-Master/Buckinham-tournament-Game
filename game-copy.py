@@ -320,18 +320,26 @@ class Soldier(pygame.sprite.Sprite):
     def shoot(self): # revisar aproximadamente minuto 15 en adelante ya que probablemnte no se necesite para mis sprites
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 20
-            bullet = Bullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            #bullet = Bullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction,'player', 'normal_gun', 10, bullet_img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
     def shoot2(self): # revisar aproximadamente minuto 15 en adelante ya que probablemnte no se necesite para mis sprites
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 20
-            bullet = Bullet2(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction)
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction,'player', 'shotgun', 10, bullet2_img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
-            
+    def enemyshoot(self):
+            if self.shoot_cooldown == 0 and self.ammo > 0:
+                self.shoot_cooldown = 20
+                #bullet = Bullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction)
+                bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery, self.direction,'enemy', 'normal_gun', 10, bullet_img)
+                bullet_group.add(bullet)
+                #reduce ammo
+                self.ammo -= 1
     def ai(self):
         if self.alive and player.alive:
             if self.idling == False and random.randint(1, 200) == 1:
@@ -343,7 +351,7 @@ class Soldier(pygame.sprite.Sprite):
                 #stop running and face the plyer
                 self.update_action(0)
                 #shoot
-                self.shoot()
+                self.enemyshoot()
             else:
                 if self.idling == False:
                     if self.direction == 1:
@@ -536,7 +544,7 @@ class Boss(pygame.sprite.Sprite):
     def basicshot(self):
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 40
-            bullet = Bullet3(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction)
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'full_life', 10, bullet2_img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
@@ -544,7 +552,7 @@ class Boss(pygame.sprite.Sprite):
     def damagedshot(self):
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = 100
-            bullet = Bullet3(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction)
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'half_life', 10, bullet2_img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
@@ -753,135 +761,104 @@ class ItemBox(pygame.sprite.Sprite):
                 player.grenades += 5
             #delete the itembox
             self.kill()
-
-
-
-class Bullet(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction):
+                        
+class GlobalBullet(pygame.sprite.Sprite):
+    def __init__(self, x, y, direction ,type, bullet_type, speed, image):
         pygame.sprite.Sprite.__init__(self)
-        self.speed = 10
-        self.image = bullet_img
+        self.speed = speed
+        self.type = type
+        self.bullet_type = bullet_type
+        self.image = image
         self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
+        self.rect.center = (x,y)
         self.direction = direction
         
     def update(self):
         #move the bullet
         self.rect.x += (self.direction * self.speed) + screen_scroll
-        #check if bullet has gone of the screen
-        if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
-            self.kill
-        #check for collision with level
-        for tile in world.obstacle_list:
-            if tile[1].colliderect(self.rect):
-                self.kill()
-        
-        #check collision with characters
-        if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive and shield_active == False:
-                player.health -= 5
-                self.kill()
-            if player.alive and shield_active == True:
-                if player.shield_can_use == True:
-                    player.shield -=5
-                    self.kill()
-                if player.shield_can_use == False:
-                    player.health -= 5
-                    self.kill()
-        for enemy in enemy_group:
-            if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive: #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
-                if player.alive:
-                    enemy.health -= 25
-                    self.kill()
-        for bossa in boss1_group:
-            if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
-                if player.alive:
-                    bossa.health -= 25
-                    self.kill()
-
-class Bullet2(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction):
-        pygame.sprite.Sprite.__init__(self)
-        self.speed = 10
-        self.image = bullet2_img
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.direction = direction
-        
-    def update(self):
-        #move the bullet
-        self.rect.x += (self.direction * self.speed) + screen_scroll
-        #check if bullet has gone of the screen
+        #check if bullet has gone off the screen
         if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
             self.kill()
-        if self.rect.right > player.rect.centerx + 100 or self.rect.left < player.rect.centerx - 100:
-            self.kill()
+        
+        if self.type == 'player' and self.bullet_type == 'shotgun':
+            if self.rect.right > player.rect.centerx + 100 or self.rect.left < player.rect.centerx - 100:
+                self.kill()
+        
         #check for collision with level
         for tile in world.obstacle_list:
             if tile[1].colliderect(self.rect):
                 self.kill()
         
-        #check collision with characters
-        if pygame.sprite.spritecollide(player, bullet_group, False):
-            if player.alive and shield_active == False:
-                player.health -= 5
-                self.kill()
-            if player.alive and shield_active == True:
-                if player.shield_can_use == True:
-                    player.shield -=5
-                    self.kill()
-                if player.shield_can_use == False:
-                    player.health -= 5
-                    self.kill()
-        for enemy in enemy_group:
-            if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive: #Video 4Revisar que tan necesario es realmente este codigo ya que mis enemigos no disparan
-                if player.alive:
-                    enemy.health -= 50
-                    self.kill()
-class Bullet3(pygame.sprite.Sprite):
-    def __init__(self, x, y, direction):
-        pygame.sprite.Sprite.__init__(self)
-        self.speed = 10
-        self.image = bullet2_img
-        self.rect = self.image.get_rect()
-        self.rect.center = (x, y)
-        self.direction = direction
+        #checks for who shoots the bullet
         
-    def update(self):
-        #move the bullet
-        self.rect.x += (self.direction * self.speed) + screen_scroll
-        #check if bullet has gone of the screen
-        if self.rect.right < 0 or self.rect.left > SCREEN_WIDTH:
-            self.kill
-        #check for collision with level
-        for tile in world.obstacle_list:
-            if tile[1].colliderect(self.rect):
-                self.kill()
+        if self.type == 'player':
+            if self.bullet_type == 'normal_gun':
+                for enemy in enemy_group:
+                    if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive:
+                        if player.alive:
+                            enemy.health -=25
+                            self.kill()
+                            
+                for bossa in boss1_group:
+                    if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
+                        if player.alive:
+                            bossa.health -= 25
+                            self.kill()
+            elif self.bullet_type == 'shotgun':
+                for enemy in enemy_group:
+                    if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive:
+                        if player.alive:
+                            enemy.health -= 50
+                            self.kill()
+                            
+                for bossa in boss1_group:
+                    if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
+                        if player.alive:
+                            bossa.health -= 50
+                            self.kill()
         
-        #check collision with characters
-        if pygame.sprite.spritecollide(player, bullet_group, False):
-            if bossa.health > 50:
+        if self.type == 'enemy':
+            if pygame.sprite.spritecollide(player, bullet_group, False):
                 if player.alive and shield_active == False:
-                    player.health -= 25
+                    player.health -= 5
                     self.kill()
+                    
                 if player.alive and shield_active == True:
                     if player.shield_can_use == True:
-                        player.shield -= 25
+                        player.shield -= 5
                         self.kill()
                     if player.shield_can_use == False:
+                        player.health -= 5
+                        self.kill
+        
+        if self.type == 'Boss':
+            if self.bullet_type == 'full_life':
+                if pygame.sprite.spritecollide(player, bullet_group, False):
+                    if player.alive and shield_active == False:
+                        player.health -= 15
+                        self.kill()
+                        
+                    if player.alive and shield_active == True:
+                        if player.shield_can_use == True:
+                            player.shield -= 15
+                            self.kill()
+                        if player.shield_can_use == False:
+                            player.health -= 15
+                            self.kill
+                            
+            if self.bullet_type == 'half_life':
+                if pygame.sprite.spritecollide(player, bullet_group, False):
+                    if player.alive and shield_active == False:
                         player.health -= 25
                         self.kill()
-            if bossa.health <= 50:
-                if player.alive and shield_active == False:
-                    player.health -= 50
-                    self.kill()
-                if player.alive and shield_active == True:
-                    if player.shield_can_use == True:
-                        player.shield -= 50
-                        self.kill()
-                    if player.shield_can_use == False:
-                        player.health -= 50
-                        self.kill()
+                        
+                    if player.alive and shield_active == True:
+                        if player.shield_can_use == True:
+                            player.shield -= 25
+                            self.kill()
+                        if player.shield_can_use == False:
+                            player.health -= 25
+                            self.kill
 
 class HealthBar():
     def __init__(self, x, y, health, max_health):
