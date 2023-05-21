@@ -662,15 +662,14 @@ class World():
                         decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 19:
-                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.4, 5, 20, 100, 5)
+                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.75, 5, 20, 100, 5)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
                         shield_bar = ShieldBar(220,10, player.shield, player.shield)
                         bombar = BombBar(5, 70,'img/icons/finalgrenade.png')
                     elif tile == 20: #create enemies
-                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 0.75, 2, 100, 300, 0)
+                        enemy = Soldier('enemy', x * TILE_SIZE, y * TILE_SIZE, 1, 2, 100, 300, 0)
                         enemy_group.add(enemy)
-                        #portal = Portal(600, 245, 4)
                     elif tile == 16: #create ammo_box
                         item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Ammo', 1)
                         item_box_group.add(item_box)
@@ -687,7 +686,7 @@ class World():
                         item_box = ItemBox(x * TILE_SIZE, y * TILE_SIZE, 'Grenade', 1)
                         item_box_group.add(item_box)
                     elif tile == 21:
-                        bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1, 2, 1000, 150, 0)
+                        bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1.5, 2, 1000, 150, 0)
                         boss1_group.add(bossa)
                         bossa_bar = Bossbar(300, 200, bossa.health, bossa.health)
                         
@@ -829,7 +828,7 @@ class GlobalBullet(pygame.sprite.Sprite):
                         self.kill()
                     if player.shield_can_use == False:
                         player.health -= 5
-                        self.kill
+                        self.kill()
         
         if self.type == 'Boss':
             if self.bullet_type == 'full_life':
@@ -844,7 +843,7 @@ class GlobalBullet(pygame.sprite.Sprite):
                             self.kill()
                         if player.shield_can_use == False:
                             player.health -= 15
-                            self.kill
+                            self.kill()
                             
             if self.bullet_type == 'half_life':
                 if pygame.sprite.spritecollide(player, bullet_group, False):
@@ -858,7 +857,7 @@ class GlobalBullet(pygame.sprite.Sprite):
                             self.kill()
                         if player.shield_can_use == False:
                             player.health -= 25
-                            self.kill
+                            self.kill()
 
 class HealthBar():
     def __init__(self, x, y, health, max_health):
