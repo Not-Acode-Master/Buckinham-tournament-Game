@@ -23,7 +23,7 @@ SCROLL_THRESH = 200
 ROWS = 12 #19
 COLS = 26 #75
 TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 23 #49
+TILE_TYPES = 24 #49
 MAX_LEVELS = 6
 screen_scroll = 0
 bg_scroll = 0
@@ -69,6 +69,8 @@ bullet_img = pygame.image.load('img/icons/bullett.png').convert_alpha()
 bullet_imgg = pygame.image.load('img/icons/bullett.png').convert_alpha()
 
 bullet2_img = pygame.image.load('img/icons/bullet2.png').convert_alpha()
+
+bullet_rockimg = pygame.image.load('img/icons/arm_projectile.png').convert_alpha()
 #grenade
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 #Keybinding images
@@ -165,6 +167,7 @@ def reset_level():
     decoration_group.empty()
     portal_group.empty()
     boss1_group.empty()
+    boss2_group.empty()
     
     #create empty tile list
     data = []
@@ -424,6 +427,8 @@ class Soldier(pygame.sprite.Sprite):
     def check_boss(self):
         if pygame.sprite.spritecollide(self, boss1_group, False) and bossa.alive:
             self.health = 0
+        elif pygame.sprite.spritecollide(self, boss2_group, False) and bossb.alive:
+            self.health = 0
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
         
@@ -541,18 +546,18 @@ class Boss(pygame.sprite.Sprite):
         self.rect.x += dx
         self.rect.y += dy
         
-    def basicshot(self):
+    def basicshot(self, img, shoot_col):
         if self.shoot_cooldown == 0 and self.ammo > 0:
-            self.shoot_cooldown = 40
-            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'full_life', 10, bullet2_img)
+            self.shoot_cooldown = shoot_col
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'full_life', 5, img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
     
-    def damagedshot(self):
+    def damagedshot(self, img, shoot_col):
         if self.shoot_cooldown == 0 and self.ammo > 0:
-            self.shoot_cooldown = 100
-            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'half_life', 10, bullet2_img)
+            self.shoot_cooldown = shoot_col
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'half_life', 10, img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
@@ -564,13 +569,19 @@ class Boss(pygame.sprite.Sprite):
                 self.idling = True
                 self.idling_counter = 50
             if self.vision.colliderect(player.rect) and shooting == True and self.health > 50:
-                #stop running and face the player
-                self.update_action(6)
-                #shoot
-                self.basicshot()
+                if self.boss_type == 'Boss1':
+                    #stop running and face the player
+                    self.update_action(6)
+                    #shoot
+                    self.basicshot(bullet2_img, 40)
+                elif self.boss_type == 'Boss2':
+                    #stop running and face the player
+                    self.update_action(6)
+                    #shoot
+                    self.basicshot(bullet_rockimg, 150)
             elif self.vision.colliderect(player.rect) and shooting == True and self.health <= 50:
                 self.update_action(7)
-                self.damagedshot()
+                self.damagedshot(bullet2_img, 100)
             else:
                 if self.idling == False:
                     if self.direction == 1:
@@ -689,13 +700,17 @@ class World():
                         bossa = Boss('Boss1', x * TILE_SIZE, y * TILE_SIZE, 1.5, 2, 1000, 150, 0)
                         boss1_group.add(bossa)
                         bossa_bar = Bossbar(300, 200, bossa.health, bossa.health)
+                    elif tile == 23:
+                        bossb = Boss('Boss2', x * TILE_SIZE, y * TILE_SIZE, 2, 2, 1000, 150, 0)
+                        boss2_group.add(bossb)
+                        bossb_bar = Bossbar(300, 200, bossb.health, bossb.health)
                         
         if level == 1:
             return player, health_bar, bullet_bar, shield_bar, bombar
         if level == 2:
             return player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar
         if level == 3:
-            return player, health_bar, bullet_bar, shield_bar, bombar
+            return player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar
         if level == 4:
             return player, health_bar, bullet_bar, shield_bar, bombar
         if level == 5:
@@ -810,6 +825,13 @@ class GlobalBullet(pygame.sprite.Sprite):
                         if player.alive:
                             bossa.health -= 25
                             self.kill()
+                
+                for bossb in boss2_group:
+                    if pygame.sprite.spritecollide(bossb, bullet_group, False) and bossb.alive:
+                        if player.alive:
+                            bossb.health -= 15
+                            self.kill()
+                            
             elif self.bullet_type == 'shotgun':
                 for enemy in enemy_group:
                     if pygame.sprite.spritecollide(enemy, bullet_group, False) and enemy.alive:
@@ -821,6 +843,12 @@ class GlobalBullet(pygame.sprite.Sprite):
                     if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
                         if player.alive:
                             bossa.health -= 50
+                            self.kill()
+                            
+                for bossb in boss2_group:
+                    if pygame.sprite.spritecollide(bossb, bullet_group, False) and bossa.alive:
+                        if player.alive:
+                            bossb.health -= 25
                             self.kill()
         
         if self.type == 'enemy':
@@ -1037,6 +1065,10 @@ class Grenade(pygame.sprite.Sprite):
                         abs(self.rect.centery - bossa.rect.centery) < TILE_SIZE * 2:
                             bossa.health -= 25
             
+            if level == 3:
+                if abs(self.rect.centerx - bossb.rect.centerx) < TILE_SIZE * 2 and \
+                        abs(self.rect.centery - bossb.rect.centery) < TILE_SIZE * 2:
+                            bossb.health -= 25
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -1118,6 +1150,7 @@ history_button = Button(304, 320 ,history_img, 0.5)
 bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 boss1_group = pygame.sprite.Group()
+boss2_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
 decoration_group = pygame.sprite.Group()
 portal_group = pygame.sprite.Group()
@@ -1281,6 +1314,13 @@ while run:
             bossa.draw()
             bossa.update()
             bossa_bar.draw(bossa.health)
+        
+        for bossb in boss2_group:
+            bossb.automove()
+            bossb.draw()
+            bossb.update()
+            bossb_bar.draw(bossb.health)
+        
             
         #loading portal
         #portal.draw()
@@ -1336,7 +1376,7 @@ while run:
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                         if level == 3:
-                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
                         if level == 4:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 5:
@@ -1448,11 +1488,13 @@ while run:
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
+                        if level == 3:
+                            print(world_data)
                         world = World()
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                         if level == 3:
-                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
                         if level == 4:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 5:
@@ -1478,7 +1520,7 @@ while run:
                 if level == 2:
                     player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                 if level == 3:
-                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                    player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
                 if level == 4:
                     player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                 if level == 5:
