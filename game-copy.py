@@ -24,7 +24,7 @@ ROWS = 12 #19
 COLS = 26 #75
 TILE_SIZE = SCREEN_HEIGHT // ROWS
 TILE_TYPES = 23 #49
-MAX_LEVELS = 2
+MAX_LEVELS = 6
 screen_scroll = 0
 bg_scroll = 0
 level = 1
@@ -694,7 +694,14 @@ class World():
             return player, health_bar, bullet_bar, shield_bar, bombar
         if level == 2:
             return player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar
-    
+        if level == 3:
+            return player, health_bar, bullet_bar, shield_bar, bombar
+        if level == 4:
+            return player, health_bar, bullet_bar, shield_bar, bombar
+        if level == 5:
+            return player, health_bar, bullet_bar, shield_bar, bombar
+        if level == 6:
+            return player, health_bar, bullet_bar, shield_bar, bombar
     def draw(self):
         for tile in self.obstacle_list:
             tile[1][0] += screen_scroll
@@ -1129,7 +1136,7 @@ with open(f'level{level}_data.csv', newline='') as csvfile:
     for x, row in enumerate(reader):
         for y, tile in enumerate(row):
             world_data[x][y] = int(tile)
-print(world_data)
+#print(world_data)
 
 world = World()
 player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
@@ -1328,6 +1335,14 @@ while run:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
+                        if level == 3:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 4:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 5:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 6:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                 if menu_state == "options":
                     screen.fill(BG2)
                     if keys_button.draw(screen) and clicked == False:
@@ -1436,7 +1451,14 @@ while run:
                         world = World()
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
-                            
+                        if level == 3:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 4:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 5:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 6:
+                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
         else:
             screen_scroll = 0
             if replay_button.draw(screen):
@@ -1449,11 +1471,20 @@ while run:
                     for x, row in enumerate(reader):
                         for y, tile in enumerate(row):
                             world_data[x][y] = int(tile)
+                            
                 world = World()
                 if level == 1:
                     player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                 if level == 2:
                     player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
+                if level == 3:
+                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                if level == 4:
+                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                if level == 5:
+                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                if level == 6:
+                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
             
             
             
