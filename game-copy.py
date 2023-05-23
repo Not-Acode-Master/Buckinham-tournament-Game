@@ -1093,15 +1093,15 @@ class Grenade(pygame.sprite.Sprite):
                         abs(self.rect.centery - bossa.rect.centery) < TILE_SIZE * 2:
                             bossa.health -= 25
             
-            if level == 3:
+            if level == 4:
                 if abs(self.rect.centerx - bossb.rect.centerx) < TILE_SIZE * 2 and \
                         abs(self.rect.centery - bossb.rect.centery) < TILE_SIZE * 2:
                             bossb.health -= 25
                             
             if level == 6:
-                if abs(self.rect.centerx - bossb.rect.centerx) < TILE_SIZE * 2 and \
-                        abs(self.rect.centery - bossb.rect.centery) < TILE_SIZE * 2:
-                            bossb.health -= 25
+                if abs(self.rect.centerx - bossc.rect.centerx) < TILE_SIZE * 2 and \
+                        abs(self.rect.centery - bossc.rect.centery) < TILE_SIZE * 2:
+                            bossc.health -= 25
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
