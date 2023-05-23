@@ -23,7 +23,7 @@ SCROLL_THRESH = 200
 ROWS = 12 #19
 COLS = 26 #75
 TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 24 #49
+TILE_TYPES = 25 #49
 MAX_LEVELS = 6
 screen_scroll = 0
 bg_scroll = 0
@@ -168,6 +168,7 @@ def reset_level():
     portal_group.empty()
     boss1_group.empty()
     boss2_group.empty()
+    boss3_group.empty()
     
     #create empty tile list
     data = []
@@ -429,6 +430,8 @@ class Soldier(pygame.sprite.Sprite):
             self.health = 0
         elif pygame.sprite.spritecollide(self, boss2_group, False) and bossb.alive:
             self.health = 0
+        elif pygame.sprite.spritecollide(self, boss3_group, False) and bossc.alive:
+            self.health = 0
     def draw(self):
         screen.blit(pygame.transform.flip(self.image, self.flip, False), self.rect)
         
@@ -579,7 +582,13 @@ class Boss(pygame.sprite.Sprite):
                     self.update_action(6)
                     #shoot
                     self.basicshot(bullet_rockimg, 150)
+                elif self.boss_type == 'Boss3':
+                    #stop running and face the player
+                    self.update_action(6)
+                    #shoot
+                    self.basicshot(bullet2_img, 40)
             elif self.vision.colliderect(player.rect) and shooting == True and self.health <= 50:
+                
                 self.update_action(7)
                 self.damagedshot(bullet2_img, 100)
             else:
@@ -704,6 +713,10 @@ class World():
                         bossb = Boss('Boss2', x * TILE_SIZE, y * TILE_SIZE, 2, 2, 1000, 150, 0)
                         boss2_group.add(bossb)
                         bossb_bar = Bossbar(300, 200, bossb.health, bossb.health)
+                    elif tile == 24:
+                        bossc = Boss('Boss3', x * TILE_SIZE, y * TILE_SIZE, 0.1, 2, 1000, 150, 0)
+                        boss3_group.add(bossc)
+                        bossc_bar = Bossbar(300, 200, bossc.health, bossc.health)
                         
         if level == 1:
             return player, health_bar, bullet_bar, shield_bar, bombar
@@ -716,7 +729,7 @@ class World():
         if level == 5:
             return player, health_bar, bullet_bar, shield_bar, bombar
         if level == 6:
-            return player, health_bar, bullet_bar, shield_bar, bombar
+            return player, health_bar, bullet_bar, shield_bar, bombar, bossc_bar
     def draw(self):
         for tile in self.obstacle_list:
             tile[1][0] += screen_scroll
@@ -831,6 +844,12 @@ class GlobalBullet(pygame.sprite.Sprite):
                         if player.alive:
                             bossb.health -= 15
                             self.kill()
+                
+                for bossc in boss3_group:
+                    if pygame.sprite.spritecollide(bossc, bullet_group, False) and bossc.alive:
+                        if player.alive:
+                            bossc.health -= 10
+                            self.kill()
                             
             elif self.bullet_type == 'shotgun':
                 for enemy in enemy_group:
@@ -846,9 +865,15 @@ class GlobalBullet(pygame.sprite.Sprite):
                             self.kill()
                             
                 for bossb in boss2_group:
-                    if pygame.sprite.spritecollide(bossb, bullet_group, False) and bossa.alive:
+                    if pygame.sprite.spritecollide(bossb, bullet_group, False) and bossb.alive:
                         if player.alive:
                             bossb.health -= 25
+                            self.kill()
+                            
+                for bossc in boss3_group:
+                    if pygame.sprite.spritecollide(bossc, bullet_group, False) and bossc.alive:
+                        if player.alive:
+                            bossc.health -= 20
                             self.kill()
         
         if self.type == 'enemy':
@@ -1069,6 +1094,11 @@ class Grenade(pygame.sprite.Sprite):
                 if abs(self.rect.centerx - bossb.rect.centerx) < TILE_SIZE * 2 and \
                         abs(self.rect.centery - bossb.rect.centery) < TILE_SIZE * 2:
                             bossb.health -= 25
+                            
+            if level == 6:
+                if abs(self.rect.centerx - bossb.rect.centerx) < TILE_SIZE * 2 and \
+                        abs(self.rect.centery - bossb.rect.centery) < TILE_SIZE * 2:
+                            bossb.health -= 25
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -1151,6 +1181,7 @@ bullet_group = pygame.sprite.Group()
 enemy_group = pygame.sprite.Group()
 boss1_group = pygame.sprite.Group()
 boss2_group = pygame.sprite.Group()
+boss3_group = pygame.sprite.Group()
 item_box_group = pygame.sprite.Group()
 decoration_group = pygame.sprite.Group()
 portal_group = pygame.sprite.Group()
@@ -1321,6 +1352,12 @@ while run:
             bossb.update()
             bossb_bar.draw(bossb.health)
         
+        for bossc in boss3_group:
+            bossc.automove()
+            bossc.draw()
+            bossc.update()
+            bossc_bar.draw(bossc.health)
+        
             
         #loading portal
         #portal.draw()
@@ -1382,7 +1419,7 @@ while run:
                         if level == 5:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 6:
-                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossc_bar = world.process_data(world_data)
                 if menu_state == "options":
                     screen.fill(BG2)
                     if keys_button.draw(screen) and clicked == False:
@@ -1500,7 +1537,7 @@ while run:
                         if level == 5:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 6:
-                            player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossc_bar = world.process_data(world_data)
         else:
             screen_scroll = 0
             if replay_button.draw(screen):
@@ -1526,7 +1563,7 @@ while run:
                 if level == 5:
                     player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                 if level == 6:
-                    player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                    player, health_bar, bullet_bar, shield_bar, bombar, bossc_bar = world.process_data(world_data)
             
             
             
