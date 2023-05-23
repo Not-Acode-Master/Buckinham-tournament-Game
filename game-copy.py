@@ -11,7 +11,7 @@ fps = 60
 
 
 SCREEN_WIDTH = 768
-SCREEN_HEIGHT = 576 #608
+SCREEN_HEIGHT = 576
 
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Plataformer')
@@ -20,10 +20,10 @@ pygame.display.set_caption('Plataformer')
 
 GRAVITY = 0.75
 SCROLL_THRESH = 200
-ROWS = 12 #19
-COLS = 26 #75
+ROWS = 12 
+COLS = 26 
 TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 25 #49
+TILE_TYPES = 25 
 MAX_LEVELS = 6
 screen_scroll = 0
 bg_scroll = 0
@@ -463,7 +463,7 @@ class Boss(pygame.sprite.Sprite):
         self.update_time = pygame.time.get_ticks()
         #specific variables for automatized movement
         self.move_counter = 0
-        self.vision = pygame.rect.Rect(0, 0, 150, 20)
+        self.vision = pygame.rect.Rect(0, 0, 500, 20)
         self.idling = False
         self.idling_counter = 0
         
@@ -1088,6 +1088,7 @@ class Grenade(pygame.sprite.Sprite):
                 if abs(self.rect.centerx - enemy.rect.centerx) < TILE_SIZE * 2 and \
                     abs(self.rect.centery - enemy.rect.centery) < TILE_SIZE * 2:
                         enemy.health -= 50
+            
             if level == 2:           
                 if abs(self.rect.centerx - bossa.rect.centerx) < TILE_SIZE * 2 and \
                         abs(self.rect.centery - bossa.rect.centery) < TILE_SIZE * 2:
@@ -1541,8 +1542,7 @@ while run:
                             for x, row in enumerate(reader):
                                 for y, tile in enumerate(row):
                                     world_data[x][y] = int(tile)
-                        if level == 3:
-                            print(world_data)
+                        
                         world = World()
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
