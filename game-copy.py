@@ -714,7 +714,7 @@ class World():
                         boss2_group.add(bossb)
                         bossb_bar = Bossbar(300, 200, bossb.health, bossb.health)
                     elif tile == 24:
-                        bossc = Boss('Boss3', x * TILE_SIZE, y * TILE_SIZE, 0.1, 2, 1000, 150, 0)
+                        bossc = Boss('Boss3', x * TILE_SIZE, y * TILE_SIZE, 0.15, 2, 1000, 150, 0)
                         boss3_group.add(bossc)
                         bossc_bar = Bossbar(300, 200, bossc.health, bossc.health)
                         
@@ -723,9 +723,9 @@ class World():
         if level == 2:
             return player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar
         if level == 3:
-            return player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar
-        if level == 4:
             return player, health_bar, bullet_bar, shield_bar, bombar
+        if level == 4:
+            return player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar
         if level == 5:
             return player, health_bar, bullet_bar, shield_bar, bombar
         if level == 6:
@@ -1413,9 +1413,9 @@ while run:
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                         if level == 3:
-                            player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
-                        if level == 4:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 4:
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
                         if level == 5:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 6:
@@ -1531,9 +1531,9 @@ while run:
                         if level == 2:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                         if level == 3:
-                            player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
-                        if level == 4:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                        if level == 4:
+                            player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
                         if level == 5:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 6:
@@ -1557,9 +1557,9 @@ while run:
                 if level == 2:
                     player, health_bar, bullet_bar, shield_bar, bombar, bossa_bar = world.process_data(world_data)
                 if level == 3:
-                    player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
-                if level == 4:
                     player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
+                if level == 4:
+                    player, health_bar, bullet_bar, shield_bar, bombar, bossb_bar = world.process_data(world_data)
                 if level == 5:
                     player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                 if level == 6:
