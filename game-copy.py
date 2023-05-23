@@ -80,7 +80,10 @@ S_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/S.png').con
 D_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/D.png').convert_alpha(), (75,75))
 P_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/P.png').convert_alpha(), (75,75))
 SPACE_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/SPACE.png').convert_alpha(), (118,75))
-ESC_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/ESC.png').convert_alpha(), (75,75))  
+ESC_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/ESC.png').convert_alpha(), (75,75)) 
+a1_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/1.png').convert_alpha(), (75,75))
+a2_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/2.png').convert_alpha(), (75,75))
+Q_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/Q.png').convert_alpha(), (75,75))
 
 
 
@@ -1169,7 +1172,7 @@ exit_button2 = Button(304, 500, exit_img, 0.5)
 keys_button = Button(304, 220, keys_img, 0.5)
 audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
-back_button = Button(20, 530, back_img, 0.5)
+back_button = Button(20, 480, back_img, 0.5)
 mainmenu_button = Button(304, 375, mainmenu_img, 0.5)
 instructions_button = Button(304, 250, instructions_img, 0.5)
 history_button = Button(304, 320 ,history_img, 0.5)
@@ -1300,10 +1303,17 @@ while run:
             draw_text('QUIT GAME', font2, WHITE, 450, 110)
             screen.blit(P_key,(350, 160))
             draw_text('PAUSE', font2, WHITE, 450, 170)
+            screen.blit(a1_key,(350, 220))
+            draw_text('NORMAL GUN', font2, WHITE, 450, 230)
+            screen.blit(a2_key,(350, 280))
+            draw_text('SHOTGUN', font2, WHITE, 450, 290)
+            screen.blit(Q_key,(350, 380))
+            draw_text('THROW GRENADE', font2, WHITE, 450, 390)
+            
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
         if main_m_state == "history":
-            display_history(screen, history, (20,20),font2, WHITE)
+            display_history(screen, history, (5,20),font2, WHITE)
             screen.blit(history_imglab, (304,400))
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
@@ -1448,10 +1458,16 @@ while run:
                     draw_text('MOVE RIGHT', font2, WHITE, 150, 290)
                     screen.blit(SPACE_key,(30, 380))
                     draw_text('SHOOT', font2, WHITE, 170, 390)
-                    screen.blit(ESC_key,(350, 100))
-                    draw_text('QUIT GAME', font2, WHITE, 450, 110)
-                    screen.blit(P_key,(350, 160))
-                    draw_text('PAUSE', font2, WHITE, 450, 170)
+                    screen.blit(P_key,(350, 100))
+                    draw_text('PAUSE', font2, WHITE, 450, 110)
+                    screen.blit(ESC_key,(350, 160))
+                    draw_text('QUIT GAME', font2, WHITE, 450, 170)
+                    screen.blit(a1_key,(350, 220))
+                    draw_text('NORMAL GUN', font2, WHITE, 450, 230)
+                    screen.blit(a2_key,(350, 280))
+                    draw_text('SHOTGUN', font2, WHITE, 450, 290)
+                    screen.blit(Q_key,(350, 380))
+                    draw_text('THROW GRENADE', font2, WHITE, 450, 390)
                     if back_button.draw(screen) and clicked == False:
                         menu_state = "options"
                         clicked = True
