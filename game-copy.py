@@ -2,6 +2,7 @@ import pygame
 import os
 import random
 import csv
+import webbrowser
 
 pygame.init()
 
@@ -16,7 +17,7 @@ SCREEN_HEIGHT = 576
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption('Plataformer')
 
-#define game variables
+##### DEFINE GAME VARIABLES #####
 
 GRAVITY = 0.75
 SCROLL_THRESH = 200
@@ -37,7 +38,7 @@ shield_active = False
 
 shooting = True
 
-# define player action variables
+##### DEFINE PLAYER ACTION VARIABLES #####
 moving_left = False
 moving_right = False
 shoot = False
@@ -49,31 +50,55 @@ gun1_active = True
 gun2_active = False
 change_gun = False
 
-#Load images
-#store tiles in a list
+##### LOAD IMAGES #####
+
+### STORE TILES IN A TILE LIST ###
 img_list = []
 for x in range(TILE_TYPES):
     img = pygame.image.load(f'img/tilesets/Tile_img/sprite_{x}.png')
-    #img = pygame.transform.scale(img, (TILE_SIZE, TILE_SIZE))
     img_list.append(img)
-#hearts
+    
+### HEARTS IMGS ###
 heart_img = pygame.image.load('img/icons/0.png').convert_alpha()
-#shield
+
+### SHIELDS ###
 shield_img1 = pygame.image.load('img/icons/shield.png').convert_alpha()
 shield_img = pygame.transform.scale(shield_img1, (32, 32))
-#skyll img
+
+### SKULL IMAGES ###
 skull_img1 = pygame.image.load('img/icons/skull.png')
 skull_img = pygame.transform.scale(skull_img1, (64, 64))
-#bullet
+
+### BULLETS ###
+
 bullet_img = pygame.image.load('img/icons/bullett.png').convert_alpha()
 bullet_imgg = pygame.image.load('img/icons/bullett.png').convert_alpha()
 
+## Boss 1:
+Boss1_stage1_bulletA = pygame.image.load('img/icons/1stage_boss1_bullett.png').convert_alpha()
+Boss1_stage1_bullet = pygame.transform.scale(Boss1_stage1_bulletA, (50, 28))
+
+
+Boss1_stage2_bullet = pygame.image.load('img/icons/2stage_boss1_bullett.png').convert_alpha()
+
+## Boss 2:
+Boss2_stage1_bulletA = pygame.image.load('img/icons/1stage_boss2_bullett.png').convert_alpha()
+Boss2_stage1_bullet = pygame.transform.scale(Boss2_stage1_bulletA, (45, 24))
+
+Boss2_stage2_bulletA = pygame.image.load('img/icons/2stage_boss2_bullett.png').convert_alpha()
+Boss2_stage2_bullet = pygame.transform.scale(Boss2_stage2_bulletA, (68, 51))
+
 bullet2_img = pygame.image.load('img/icons/bullet2.png').convert_alpha()
 
-bullet_rockimg = pygame.image.load('img/icons/arm_projectile.png').convert_alpha()
-#grenade
+## Boss 3:
+
+Boss3_stage2_bulletA = pygame.image.load('img/icons/2stage_boss3_bullett.png').convert_alpha()
+Boss3_stage2_bullet = pygame.transform.scale(Boss3_stage2_bulletA, (42, 34))
+
+### GRENADES ###
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
-#Keybinding images
+
+### KEY BINDINGS IMAGES ###
 W_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/W.png').convert_alpha(), (75,75))
 A_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/A.png').convert_alpha(), (75,75))
 S_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/S.png').convert_alpha(), (75,75))
@@ -87,7 +112,7 @@ Q_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/Q.png').con
 
 
 
-#Button Images
+### BUTTON IMAGES ###
 play_img = pygame.image.load('img//Buttons/play_button.png').convert_alpha()
 exit_img = pygame.image.load('img//Buttons/exit_button.png').convert_alpha()
 replay_img = pygame.image.load('img/Buttons/replay_button.png').convert_alpha()
@@ -101,20 +126,19 @@ back_img = pygame.image.load('img//Buttons/back_button.png').convert_alpha()
 mainmenu_img = pygame.image.load('img//Buttons/mainmenu_button.png').convert_alpha()
 instructions_img = pygame.image.load('img//Buttons/instructions_button.png').convert_alpha()
 history_img = pygame.image.load('img//Buttons/history_button.png').convert_alpha()
+about_img = pygame.image.load('img//Buttons/about_button.png').convert_alpha()
+github_img = pygame.image.load('img//Buttons/github_button.png').convert_alpha()
+myself_img = pygame.image.load('img//Buttons/myself_button.png').convert_alpha()
 
-#backround
+### BACKROUND ###
 bcimg = pygame.image.load('img/Backround/backgrounds/background.png').convert_alpha()
 
-#pickup boxes
+### PICKUP BOXES ###
 
 health_box_img = pygame.image.load('img/icons/health_box.png').convert_alpha()
 ammo_box_img = pygame.image.load('img/icons/ammo_box.png').convert_alpha()
-#item_boxes = {
-#    'Health'    : health_box_img,
-#    'Ammo'      : ammo_box_img
-#}
 
-#Define colors
+### DEFINE COLORS ###
 BG = (144, 201, 120)
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
@@ -123,18 +147,23 @@ BLACK = (0, 0, 0)
 BLUE = (52, 21, 252)
 BG2 = (125,38,205)
 
-#define font
+#DEFINE FONTS
 
-font = pygame.font.SysFont('Futura', 30) #Cambiar después la fuente
-font2 = pygame.font.SysFont('Grand 9k Pixel Regular', 20) #Cambiar después la fuente
+font = pygame.font.SysFont('Futura', 30)
+font2 = pygame.font.SysFont('Grand 9k Pixel Regular', 20)
 
-##Define History
+### DEFINE HISTORY ###
 history = '''The world as we know it has become unstable. The laws of physics have 
 been distorted and strange anomalies are appearing everywhere. It is discovered that a man named Dr. Marcus,a brilliant but reclusive 
 scientist,he has been conducting experiments that have caused this disruption.\n \nYou are an special agent
  with the purpose of infiltrating in Dr.Marcus's Lab to figure out what is he planning and end his misterious experiments'''
 history_imglab =  pygame.transform.scale(pygame.image.load('img/Aditional_imgs/lab.png').convert_alpha(), (350,250))
-##
+
+### DEFINE MYSELF ###
+myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose Max Leon School, I really like programming, and 
+I made this game with a lot of effort, hope you like it and enjoy it guys!!!. if you need something contact me through my GitHub :)'''
+
+### DEFINE CERTAIN FUNCTIONS ###
 
 def draw_text(text, font, text_col, x, y):
     img = font.render(text, True, text_col)
@@ -162,7 +191,7 @@ def draw_bg():
     for x in range(5):
         screen.blit(bcimg, ((x * width) - bg_scroll, 0))
         
-#func to reset level
+###### FUNCTION TO RESET LEVEL #####
 def reset_level():
     enemy_group.empty()
     bullet_group.empty()
@@ -173,7 +202,7 @@ def reset_level():
     boss2_group.empty()
     boss3_group.empty()
     
-    #create empty tile list
+    ###### CREATE EMPTY TILE LIST ######
     data = []
     for row in range(ROWS):
         r = [-1] * COLS
@@ -194,7 +223,7 @@ class Soldier(pygame.sprite.Sprite):
         self.an_col = an_col
         self.start_ammo =ammo
         self.shoot_cooldown = 0
-        self.health = 100 #check min 27 from video 4 (maybe may enemies will need less health)x
+        self.health = 100 
         self.max_health = self.health
         self.shield = 100
         self.max_shield = self.shield
@@ -208,18 +237,18 @@ class Soldier(pygame.sprite.Sprite):
         self.frame_index = 0
         self.action = 0
         self.update_time = pygame.time.get_ticks()
-        #ai specific variables
+        ### AI SPECIFIC VARIABLES ###
         self.move_counter = 0
         self.vision = pygame.Rect(0, 0, 150, 20)
         self.idling = False
         self.idling_counter = 0
 
-        #load all images for the players
+        ##### LOAD ALL THE IMAGES FOR THE LAYER #####
         animation_types = ['Idle', 'Run', 'Jump', 'Death', 'Shield', 'Crouch', 'Idle2', 'Run2', 'Jump2', 'Death2', 'Shield2', 'Crouch2']
         for animation in animation_types:
-            #reset temporary list of images
+            ### RESET TEMPORARY LIST OF IMAGES ###
             temp_list = []
-            #count the number of files in the folder
+            ### COUNT THE NUMBER OF FILES IN THE FOLDER ###
             num_of_frames = len(os.listdir(f'img/{self.char_type}/{animation}'))
             for i in range(num_of_frames):
                 img = pygame.image.load(f'img/{self.char_type}/{animation}/{i}.png').convert_alpha()
@@ -239,23 +268,21 @@ class Soldier(pygame.sprite.Sprite):
         self.check_paused()
         self.check_shield()
         self.check_boss()
-        #update cooldown
+        ### UPDATE COOLDOWN ###
         if self.shoot_cooldown > 0:
             self.shoot_cooldown -= 1
         if crouch == True:
             player.speed = 0
-        #if shield_active == True:
-            #print('a')
     
     
     def move(self, moving_left, moving_right):
-        #reset movement variable
+        ### RESET MOVEMENT VARIABLES ###
         screen_scroll = 0
         
         dx = 0
         dy = 0
         
-        #assign movement variables if moving left or right
+        #### ASSIGN MOVEMENT VARIABLES IF MOVING LEFT OR RIGHT ###
         if moving_left:
             dx = -self.speed
             self.flip = True
@@ -265,24 +292,24 @@ class Soldier(pygame.sprite.Sprite):
             self.flip = False
             self.direction = 1
         
-        #jump
+        #JUMP
         if self.jump == True and self.in_air == False:
             self.vel_y = -11
             self.jump = False
             self.in_air = True
         
-        #apply gravity
+        ### APPLY GRAVITY ###
         self.vel_y += GRAVITY
         if self.vel_y > 10:
             self.vel_y
         dy += self.vel_y
         
-        #check for collision
+        ### CHECK FOR COLLISION ###
         for tile in world.obstacle_list:
-            #check collision in the x direction
+            ### CHECK COLLISION IN THE X DIRECTION ###
             if tile[1].colliderect(self.rect.x + dx, self.rect.y, self.width, self.height):
                 dx = 0
-            #check for collision in the y direction
+            ### CHECK FOR COLLISION IN THE Y DIRECTION ###
             if tile[1].colliderect(self.rect.x, self.rect.y + dy, self.width, self.height):
                 #check if below the ground i.e jumping
                 if self.vel_y < 0:
@@ -463,7 +490,7 @@ class Boss(pygame.sprite.Sprite):
         self.update_time = pygame.time.get_ticks()
         #specific variables for automatized movement
         self.move_counter = 0
-        self.vision = pygame.rect.Rect(0, 0, 500, 20)
+        self.vision = pygame.rect.Rect(0, 0, 600, 20)
         self.idling = False
         self.idling_counter = 0
         
@@ -560,10 +587,17 @@ class Boss(pygame.sprite.Sprite):
             #reduce ammo
             self.ammo -= 1
     
-    def damagedshot(self, img, shoot_col):
+    def damagedshot(self, img, shoot_col, speed):
+        placement = 20
+        if self.boss_type == 'Boss1':
+            placement = 20
+        if self.boss_type == 'Boss2':
+            placement = 50
+        if self.boss_type == 'Boss3':
+            placement = 20
         if self.shoot_cooldown == 0 and self.ammo > 0:
             self.shoot_cooldown = shoot_col
-            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + 20, self.direction,'Boss', 'half_life', 10, img)
+            bullet = GlobalBullet(self.rect.centerx + (0.75 * player.rect.size[0] * self.direction), self.rect.centery + placement, self.direction,'Boss', 'half_life', speed, img)
             bullet_group.add(bullet)
             #reduce ammo
             self.ammo -= 1
@@ -579,21 +613,27 @@ class Boss(pygame.sprite.Sprite):
                     #stop running and face the player
                     self.update_action(6)
                     #shoot
-                    self.basicshot(bullet2_img, 40)
+                    self.basicshot(Boss1_stage1_bullet, 40)
                 elif self.boss_type == 'Boss2':
                     #stop running and face the player
                     self.update_action(6)
                     #shoot
-                    self.basicshot(bullet_rockimg, 150)
+                    self.basicshot(Boss2_stage1_bullet, 150)
                 elif self.boss_type == 'Boss3':
                     #stop running and face the player
                     self.update_action(6)
                     #shoot
                     self.basicshot(bullet2_img, 40)
             elif self.vision.colliderect(player.rect) and shooting == True and self.health <= 50:
-                
-                self.update_action(7)
-                self.damagedshot(bullet2_img, 100)
+                if self.boss_type == 'Boss1':
+                    self.update_action(7)
+                    self.damagedshot(Boss1_stage2_bullet, 100, 10)
+                elif self.boss_type == 'Boss2':
+                    self.update_action(7)
+                    self.damagedshot(Boss2_stage2_bullet, 100, 5)
+                elif self.boss_type == 'Boss3': 
+                    self.update_action(7)
+                    self.damagedshot(Boss3_stage2_bullet, 40, 5)
             else:
                 if self.idling == False:
                     if self.direction == 1:
@@ -685,7 +725,7 @@ class World():
                         decoration = Decoration(img, x * TILE_SIZE, y * TILE_SIZE)
                         decoration_group.add(decoration)
                     elif tile == 19:
-                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.75, 5, 20, 100, 5)
+                        player = Soldier('player', x * TILE_SIZE, y * TILE_SIZE, 1.6, 5, 20, 100, 5)
                         health_bar = HealthBar(10, 10, player.health, player.health)
                         bullet_bar = BulletBar(0, 40, 'img/icons/bullet_bar.png')
                         shield_bar = ShieldBar(220,10, player.shield, player.shield)
@@ -1165,18 +1205,22 @@ class Button():
 
 #create buttons
 start_button = Button(304, 125, play_img, 0.5)
-exit_button = Button(304, 400, exit_img, 0.5)
+exit_button = Button(304, 380, exit_img, 0.5)
 replay_button = Button(SCREEN_WIDTH // 2 - 75, SCREEN_HEIGHT // 2 + 100, replay_img, 0.5)
 resume_button = Button(304, 125, resume_img, 0.5)
-options_button = Button(304, 250, options_img, 0.5)
-exit_button2 = Button(304, 500, exit_img, 0.5)
+options_button = Button(304, 210, options_img, 0.5)
+exit_button2 = Button(304, 380, exit_img, 0.5)
 keys_button = Button(304, 220, keys_img, 0.5)
 audio_button = Button(304, 310, audio_img, 0.5)
 video_button = Button(304, 400, video_img, 0.5)
 back_button = Button(20, 480, back_img, 0.5)
-mainmenu_button = Button(304, 375, mainmenu_img, 0.5)
-instructions_button = Button(304, 250, instructions_img, 0.5)
+mainmenu_button = Button(304, 295, mainmenu_img, 0.5)
+instructions_button = Button(304, 210, instructions_img, 0.5)
 history_button = Button(304, 320 ,history_img, 0.5)
+about_button = Button(304, 295, about_img, 0.5)
+github_button = Button(304, 210, github_img, 0.5)
+myself_button = Button(304, 295, myself_img, 0.5)
+
 
 
 
@@ -1279,6 +1323,9 @@ while run:
             if instructions_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
                 clicked = True
+            if about_button.draw(screen) and clicked == False:
+                main_m_state = "about"
+                clicked = True
         if main_m_state == "instructions":
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "principal"
@@ -1318,7 +1365,17 @@ while run:
             screen.blit(history_imglab, (304,400))
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
-            
+        if main_m_state == "about":
+            if back_button.draw(screen) and clicked == False:
+                main_m_state = "principal"
+            if github_button.draw(screen) and clicked == False:
+                webbrowser.open_new("https://github.com/Not-Acode-Master/Buckinham-tournament-Game")
+            if myself_button.draw(screen) and clicked == False:
+                main_m_state = "myself"
+        if main_m_state == "myself":
+            display_history(screen, myselftxt, (5, 20), font2, WHITE)
+            if back_button.draw(screen) and clicked == False:
+                main_m_state = "about"
     else:
     #update backround
         draw_bg()
