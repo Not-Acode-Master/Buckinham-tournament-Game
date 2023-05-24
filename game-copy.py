@@ -163,6 +163,17 @@ history_imglab =  pygame.transform.scale(pygame.image.load('img/Aditional_imgs/l
 myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose Max Leon School, I really like programming, and 
 I made this game with a lot of effort, hope you like it and enjoy it guys!!!. if you need something contact me through my GitHub :)'''
 
+### ANIMATED TEXT VARIABLES AND STUFF ###
+messages = ['Checkout this sweet message', 'this is another great message', 'This is a great tutorial']
+snip = font2.render('', True, 'white')
+counter = 0
+text_speed = 3
+active_message = 0
+message = messages[active_message]
+done = False
+
+counter_history = 1
+
 ### DEFINE CERTAIN FUNCTIONS ###
 
 def draw_text(text, font, text_col, x, y):
@@ -1288,6 +1299,16 @@ while run:
                 gun1_active = False
             if event.key == pygame.K_ESCAPE:
                 run = False
+            if event.key == pygame.K_RETURN and done and active_message < len(messages) - 1:
+                active_message += 1
+                done = False
+                message = messages[active_message]
+                counter = 0
+            if event.key == pygame.K_RETURN:
+                counter_history += 1
+    
+
+                
         #key button released
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_a:
@@ -1315,7 +1336,8 @@ while run:
         #add buttons
         if main_m_state == "principal":
             if start_button.draw(screen) and clicked == False:
-                start_game = True
+                main_m_state = "secondplay"
+                #start_game = True
                 clicked = True
             if exit_button.draw(screen) and clicked == False:
                 run = False
@@ -1376,6 +1398,20 @@ while run:
             display_history(screen, myselftxt, (5, 20), font2, WHITE)
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "about"
+        if main_m_state == "secondplay":
+            pygame.draw.rect(screen, 'black', [0, 376, SCREEN_WIDTH, 200])
+            if counter < text_speed * len(message):
+                counter += 1
+            elif counter >= text_speed * len(message):
+                done = True
+                
+            snip = font2.render(message[0:counter//(text_speed)], True, 'White')
+            screen.blit(snip, (10, 380))
+            
+            if counter_history > len(messages):
+                start_game = True
+            
+                
     else:
     #update backround
         draw_bg()
@@ -1637,7 +1673,6 @@ while run:
                     player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                 if level == 6:
                     player, health_bar, bullet_bar, shield_bar, bombar, bossc_bar = world.process_data(world_data)
-            
             
             
     pygame.display.update()
