@@ -107,6 +107,10 @@ trophy_img = pygame.transform.scale(trophy_imgA, (42, 34))
 ### GAME COMPLETED IMG ##
 game_complete_img = pygame.image.load('img/icons/game_completed.png').convert_alpha()
 
+### CADATE IMAGE
+cadete_imgA = pygame.image.load('img/icons/a1.png').convert_alpha()
+cadete_img = pygame.transform.scale(cadete_imgA, (200, 196))
+
 
 ### KEY BINDINGS IMAGES ###
 W_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/W.png').convert_alpha(), (75,75))
@@ -174,7 +178,7 @@ myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose M
 I made this game with a lot of effort, hope you like it and enjoy it guys!!!. if you need something contact me through my GitHub :)'''
 
 ### ANIMATED TEXT VARIABLES AND STUFF ###
-messages = ['''Checkout this sweet message that is for prooving if the text deployment method is working correctly''', 'this is another great message', 'This is a great tutorial']
+messages = ['''Checkout this sweet message that is for prooving if the text deployment method is working correctly''', 'this is another great message', 'This is a great tutorial', 'proof text, is it working?']
 snip = font2.render('', True, 'white')
 counter = 0
 text_speed = 3
@@ -1435,6 +1439,7 @@ while run:
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "about"
         if main_m_state == "secondplay":
+            screen.blit(cadete_img, (50,250))
             pygame.draw.rect(screen, 'black', [0, 376, SCREEN_WIDTH, 200])
             snip = font2.render(message[0:counter//(text_speed)], True, 'White')
             screen.blit(snip, (10, 380))
