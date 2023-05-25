@@ -178,7 +178,7 @@ myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose M
 I made this game with a lot of effort, hope you like it and enjoy it guys!!!. if you need something contact me through my GitHub :)'''
 
 ### ANIMATED TEXT VARIABLES AND STUFF ###
-messages = ['''Checkout this sweet message that is for prooving if the text deployment method is working correctly''', 'this is another great message', 'This is a great tutorial', 'proof text, is it working?']
+messages = ['''Soldier you have a specia mission''', 'You have to infiltrate to Dr.Marcus Lab', 'Please look out for problems in the lab', 'If you find something please contact the base']
 snip = font2.render('', True, 'white')
 counter = 0
 text_speed = 3
