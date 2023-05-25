@@ -111,6 +111,13 @@ game_complete_img = pygame.image.load('img/icons/game_completed.png').convert_al
 cadete_imgA = pygame.image.load('img/icons/a1.png').convert_alpha()
 cadete_img = pygame.transform.scale(cadete_imgA, (200, 196))
 
+### TITTLE 
+titleA = pygame.image.load('img/icons/Tittle.png').convert_alpha()
+
+game_over = pygame.image.load('img/icons/gameover.png').convert_alpha()
+
+
+
 
 ### KEY BINDINGS IMAGES ###
 W_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/W.png').convert_alpha(), (75,75))
@@ -916,19 +923,19 @@ class GlobalBullet(pygame.sprite.Sprite):
                 for bossa in boss1_group:
                     if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
                         if player.alive:
-                            bossa.health -= 25
+                            bossa.health -= 15
                             self.kill()
                 
                 for bossb in boss2_group:
                     if pygame.sprite.spritecollide(bossb, bullet_group, False) and bossb.alive:
                         if player.alive:
-                            bossb.health -= 15
+                            bossb.health -= 10
                             self.kill()
                 
                 for bossc in boss3_group:
                     if pygame.sprite.spritecollide(bossc, bullet_group, False) and bossc.alive:
                         if player.alive:
-                            bossc.health -= 10
+                            bossc.health -= 5
                             self.kill()
                             
             elif self.bullet_type == 'shotgun':
@@ -941,19 +948,19 @@ class GlobalBullet(pygame.sprite.Sprite):
                 for bossa in boss1_group:
                     if pygame.sprite.spritecollide(bossa, bullet_group, False) and bossa.alive:
                         if player.alive:
-                            bossa.health -= 50
+                            bossa.health -= 20
                             self.kill()
                             
                 for bossb in boss2_group:
                     if pygame.sprite.spritecollide(bossb, bullet_group, False) and bossb.alive:
                         if player.alive:
-                            bossb.health -= 25
+                            bossb.health -= 15
                             self.kill()
                             
                 for bossc in boss3_group:
                     if pygame.sprite.spritecollide(bossc, bullet_group, False) and bossc.alive:
                         if player.alive:
-                            bossc.health -= 20
+                            bossc.health -= 10
                             self.kill()
         
         if self.type == 'enemy':
@@ -964,39 +971,39 @@ class GlobalBullet(pygame.sprite.Sprite):
                     
                 if player.alive and shield_active == True:
                     if player.shield_can_use == True:
-                        player.shield -= 5
+                        player.shield -= 10
                         self.kill()
                     if player.shield_can_use == False:
-                        player.health -= 5
+                        player.health -= 10
                         self.kill()
         
         if self.type == 'Boss':
             if self.bullet_type == 'full_life':
                 if pygame.sprite.spritecollide(player, bullet_group, False):
                     if player.alive and shield_active == False:
-                        player.health -= 15
+                        player.health -= 20
                         self.kill()
                         
                     if player.alive and shield_active == True:
                         if player.shield_can_use == True:
-                            player.shield -= 15
+                            player.shield -= 20
                             self.kill()
                         if player.shield_can_use == False:
-                            player.health -= 15
+                            player.health -= 20
                             self.kill()
                             
             if self.bullet_type == 'half_life':
                 if pygame.sprite.spritecollide(player, bullet_group, False):
                     if player.alive and shield_active == False:
-                        player.health -= 25
+                        player.health -= 30
                         self.kill()
                         
                     if player.alive and shield_active == True:
                         if player.shield_can_use == True:
-                            player.shield -= 25
+                            player.shield -= 30
                             self.kill()
                         if player.shield_can_use == False:
-                            player.health -= 25
+                            player.health -= 30
                             self.kill()
 
 class HealthBar():
@@ -1182,17 +1189,17 @@ class Grenade(pygame.sprite.Sprite):
             if level == 2:           
                 if abs(self.rect.centerx - bossa.rect.centerx) < TILE_SIZE * 2 and \
                         abs(self.rect.centery - bossa.rect.centery) < TILE_SIZE * 2:
-                            bossa.health -= 25
+                            bossa.health -= 22
             
             if level == 4:
                 if abs(self.rect.centerx - bossb.rect.centerx) < TILE_SIZE * 2 and \
                         abs(self.rect.centery - bossb.rect.centery) < TILE_SIZE * 2:
-                            bossb.health -= 25
+                            bossb.health -= 17
                             
             if level == 6:
                 if abs(self.rect.centerx - bossc.rect.centerx) < TILE_SIZE * 2 and \
                         abs(self.rect.centery - bossc.rect.centery) < TILE_SIZE * 2:
-                            bossc.health -= 25
+                            bossc.health -= 12
 
 class Explosion(pygame.sprite.Sprite):
     def __init__(self, x, y, scale):
@@ -1375,6 +1382,7 @@ while run:
         screen.fill(BG2)
         #add buttons
         if main_m_state == "principal":
+            screen.blit(titleA, (100, 0))
             if start_button.draw(screen) and clicked == False:
                 main_m_state = "secondplay"
                 #start_game = True
@@ -1695,6 +1703,8 @@ while run:
                     screen.blit(game_complete_img, (100,100))
         else:
             screen_scroll = 0
+            screen.fill(RED)
+            screen.blit(game_over, (100, 100))
             if replay_button.draw(screen):
                 bg_scroll = 0
                 #level = 1
