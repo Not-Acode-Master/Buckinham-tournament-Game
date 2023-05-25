@@ -1715,7 +1715,7 @@ while run:
                 if game_complete:
                     screen.fill(BG2)
                     screen.blit(game_complete_img, (100,100))
-                    display_history(screen, end, (5,300),font2, WHITE)
+                    display_history(screen, end, (0,320),font2, WHITE)
         else:
             screen_scroll = 0
             screen.fill(RED)
