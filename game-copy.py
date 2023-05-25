@@ -117,7 +117,7 @@ titleA = pygame.image.load('img/icons/Tittle.png').convert_alpha()
 game_over = pygame.image.load('img/icons/gameover.png').convert_alpha()
 
 principal_imga = pygame.image.load('img/icons/principal.jpg').convert_alpha()
-principal_img = pygame.transform.scale(principal_imga, (1000, 1063))
+principal_img = pygame.transform.scale(principal_imga, (768, 525))
 
 
 
@@ -182,6 +182,11 @@ been distorted and strange anomalies are appearing everywhere. It is discovered 
 scientist,he has been conducting experiments that have caused this disruption.\n \nYou are an special agent
  with the purpose of infiltrating in Dr.Marcus's Lab to figure out what is he planning and end his misterious experiments'''
 history_imglab =  pygame.transform.scale(pygame.image.load('img/Aditional_imgs/lab.png').convert_alpha(), (350,250))
+
+end = '''Congratulations, you have finally defeated all the AI of doctor Mr.Marcus but as we in the military base though the AI 
+was not bad, the one that corrupted the ai was Dr.Marcus, your next mission will be to capture him. This only teaches us
+that we have to learn to use artificial intelligence and how to, because nowdays most of the people missuses the artificial intelligence
+and maybe who knows, it can finish by conquering the earth'''
 
 ### DEFINE MYSELF ###
 myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose Max Leon School, I really like programming, and 
@@ -1459,6 +1464,7 @@ while run:
             pygame.draw.rect(screen, 'black', [0, 376, SCREEN_WIDTH, 200])
             snip = font2.render(message[0:counter//(text_speed)], True, 'White')
             screen.blit(snip, (10, 380))
+            draw_text('PRESS ENTER TO CONTINUE WHEN THE TEXT FINISHES', font2, WHITE, 180, 530)
             
             if counter < text_speed * len(message):
                 counter += 1
@@ -1709,6 +1715,7 @@ while run:
                 if game_complete:
                     screen.fill(BG2)
                     screen.blit(game_complete_img, (100,100))
+                    display_history(screen, end, (5,300),font2, WHITE)
         else:
             screen_scroll = 0
             screen.fill(RED)
