@@ -1665,7 +1665,7 @@ while run:
                         player.update_action(7) # 7 means run2
                     else:
                         player.update_action(6) # 6 means idle2
-                    screen_scroll, level_complete = player.move(moving_left, moving_right)
+                    screen_scroll, level_complete, game_complete = player.move(moving_left, moving_right)
                     bg_scroll -= screen_scroll
                 if level_complete:
                     level += 1
