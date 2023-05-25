@@ -116,6 +116,9 @@ titleA = pygame.image.load('img/icons/Tittle.png').convert_alpha()
 
 game_over = pygame.image.load('img/icons/gameover.png').convert_alpha()
 
+principal_imga = pygame.image.load('img/icons/principal.jpg').convert_alpha()
+principal_img = pygame.transform.scale(principal_imga, (1000, 1063))
+
 
 
 
@@ -185,7 +188,11 @@ myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose M
 I made this game with a lot of effort, hope you like it and enjoy it guys!!!. if you need something contact me through my GitHub :)'''
 
 ### ANIMATED TEXT VARIABLES AND STUFF ###
-messages = ['''Soldier you have a specia mission''', 'You have to infiltrate to Dr.Marcus Lab', 'Please look out for problems in the lab', 'If you find something please contact the base']
+messages = ['''Soldier you have a specia mission.''',
+            'You have to infiltrate to Dr.Marcus Lab.',
+            'Please look out for problems in the lab.',
+            'It seems that he missused the artificial intelligence',
+            'If you find something please contact the base.']
 snip = font2.render('', True, 'white')
 counter = 0
 text_speed = 3
@@ -1432,7 +1439,7 @@ while run:
                 main_m_state = "instructions"
         if main_m_state == "history":
             display_history(screen, history, (5,20),font2, WHITE)
-            screen.blit(history_imglab, (304,400))
+            screen.blit(history_imglab, (204,300))
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "instructions"
         if main_m_state == "about":
@@ -1447,6 +1454,7 @@ while run:
             if back_button.draw(screen) and clicked == False:
                 main_m_state = "about"
         if main_m_state == "secondplay":
+            screen.blit(principal_img, (0,0))
             screen.blit(cadete_img, (50,250))
             pygame.draw.rect(screen, 'black', [0, 376, SCREEN_WIDTH, 200])
             snip = font2.render(message[0:counter//(text_speed)], True, 'White')
