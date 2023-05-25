@@ -24,13 +24,14 @@ SCROLL_THRESH = 200
 ROWS = 12 
 COLS = 26 
 TILE_SIZE = SCREEN_HEIGHT // ROWS
-TILE_TYPES = 25 
+TILE_TYPES = 26
 MAX_LEVELS = 6
 screen_scroll = 0
 bg_scroll = 0
 level = 1
 start_game = False
 game_paused = False
+game_complete = False
 menu_state = "main"
 main_m_state = "principal"
 clicked = False
@@ -98,6 +99,15 @@ Boss3_stage2_bullet = pygame.transform.scale(Boss3_stage2_bulletA, (42, 34))
 ### GRENADES ###
 grenade_img = pygame.image.load('img/icons/grenade.png').convert_alpha()
 
+
+### Trophy img
+trophy_imgA = pygame.image.load('img/icons/trophy.png').convert_alpha()
+trophy_img = pygame.transform.scale(trophy_imgA, (42, 34))
+
+### GAME COMPLETED IMG ##
+game_complete_img = pygame.image.load('img/icons/game_completed.png').convert_alpha()
+
+
 ### KEY BINDINGS IMAGES ###
 W_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/W.png').convert_alpha(), (75,75))
 A_key = pygame.transform.scale(pygame.image.load('img/Key_icons/KEYS/A.png').convert_alpha(), (75,75))
@@ -164,7 +174,7 @@ myselftxt = '''Hi!!, my name is Santiago Sánchez, I'm a student from the Jose M
 I made this game with a lot of effort, hope you like it and enjoy it guys!!!. if you need something contact me through my GitHub :)'''
 
 ### ANIMATED TEXT VARIABLES AND STUFF ###
-messages = ['Checkout this sweet message', 'this is another great message', 'This is a great tutorial']
+messages = ['''Checkout this sweet message that is for prooving if the text deployment method is working correctly''', 'this is another great message', 'This is a great tutorial']
 snip = font2.render('', True, 'white')
 counter = 0
 text_speed = 3
@@ -195,12 +205,14 @@ def display_history(surface, history, pos, font, color):
             x += word_with + space
         x = pos[0]
         y += word_height
-
+    
 def draw_bg():
     screen.fill(BG)
     width = bcimg.get_width()
     for x in range(5):
         screen.blit(bcimg, ((x * width) - bg_scroll, 0))
+    
+    
         
 ###### FUNCTION TO RESET LEVEL #####
 def reset_level():
@@ -337,7 +349,10 @@ class Soldier(pygame.sprite.Sprite):
         level_complete = False
         if pygame.sprite.spritecollide(self, portal_group, False):
             level_complete = True
-
+        
+        global game_complete
+        if pygame.sprite.spritecollide(self, trophy_group, False):
+            game_complete = True
         
         #check if fallen off the map
         if self.rect.bottom > SCREEN_HEIGHT:
@@ -360,7 +375,7 @@ class Soldier(pygame.sprite.Sprite):
                 self.rect.x -= dx
                 screen_scroll = -dx
                 
-        return screen_scroll, level_complete
+        return screen_scroll, level_complete, game_complete
         
     def shoot(self): # revisar aproximadamente minuto 15 en adelante ya que probablemnte no se necesite para mis sprites
         if self.shoot_cooldown == 0 and self.ammo > 0:
@@ -460,6 +475,10 @@ class Soldier(pygame.sprite.Sprite):
             self.speed = 0
         else:
             self.speed = self.original_speed
+    
+    def check_gamec(self):
+        if game_complete == True:
+            self.speed = 0
     
     def check_shield(self):
         if self.shield <= 0:
@@ -771,6 +790,9 @@ class World():
                         bossc = Boss('Boss3', x * TILE_SIZE, y * TILE_SIZE, 0.15, 2, 1000, 150, 0)
                         boss3_group.add(bossc)
                         bossc_bar = Bossbar(300, 200, bossc.health, bossc.health)
+                    elif tile == 25:
+                        trophy1 = trophy(trophy_img, x * TILE_SIZE, y * TILE_SIZE)
+                        trophy_group.add(trophy1)
                         
         if level == 1:
             return player, health_bar, bullet_bar, shield_bar, bombar
@@ -1082,6 +1104,19 @@ class Portal(pygame.sprite.Sprite):
     def update(self):
         self.rect.x += screen_scroll
         self.update_animation()
+        
+class trophy(pygame.sprite.Sprite):
+    def __init__(self, img, x, y,):
+        pygame.sprite.Sprite.__init__(self)
+        self.image = img
+        self.rect = self.image.get_rect()
+        self.rect.midtop = (x + TILE_SIZE // 2, y + (TILE_SIZE - self.image.get_height()))
+        
+    def draw(self):
+        screen.blit(self.image, self.rect)
+        
+    def update(self):
+        self.rect.x += screen_scroll
 
 class Grenade(pygame.sprite.Sprite):
     def __init__(self, x, y, direction):
@@ -1246,6 +1281,7 @@ decoration_group = pygame.sprite.Group()
 portal_group = pygame.sprite.Group()
 grenade_group = pygame.sprite.Group()
 explosion_group = pygame.sprite.Group()
+trophy_group = pygame.sprite.Group()
 
 
 #create empty tile list
@@ -1400,13 +1436,13 @@ while run:
                 main_m_state = "about"
         if main_m_state == "secondplay":
             pygame.draw.rect(screen, 'black', [0, 376, SCREEN_WIDTH, 200])
+            snip = font2.render(message[0:counter//(text_speed)], True, 'White')
+            screen.blit(snip, (10, 380))
+            
             if counter < text_speed * len(message):
                 counter += 1
             elif counter >= text_speed * len(message):
                 done = True
-                
-            snip = font2.render(message[0:counter//(text_speed)], True, 'White')
-            screen.blit(snip, (10, 380))
             
             if counter_history > len(messages):
                 start_game = True
@@ -1480,6 +1516,8 @@ while run:
         grenade_group.draw(screen)
         explosion_group.update()
         explosion_group.draw(screen)
+        trophy_group.update()
+        trophy_group.draw(screen)
         
         
         #update the player actions
@@ -1599,7 +1637,7 @@ while run:
                         player.update_action(1) # 1 means run
                     else:
                         player.update_action(0) # 0 means idle
-                    screen_scroll, level_complete = player.move(moving_left, moving_right)
+                    screen_scroll, level_complete, game_complete = player.move(moving_left, moving_right)
                     bg_scroll -= screen_scroll
                     #check if the player has completed the level
                 if gun2_active == True and gun1_active == False:
@@ -1647,6 +1685,9 @@ while run:
                             player, health_bar, bullet_bar, shield_bar, bombar = world.process_data(world_data)
                         if level == 6:
                             player, health_bar, bullet_bar, shield_bar, bombar, bossc_bar = world.process_data(world_data)
+                if game_complete:
+                    screen.fill(BG2)
+                    screen.blit(game_complete_img, (100,100))
         else:
             screen_scroll = 0
             if replay_button.draw(screen):
